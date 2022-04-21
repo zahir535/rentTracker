@@ -15,7 +15,7 @@ import {
     StrongText,
     CenteredView,
     LoginButton,
-    GoogleIcon
+    SmallSpaceBreak
 } from './../UiComponents/uiComponents';
 
 const Login = () => {
@@ -24,7 +24,9 @@ const Login = () => {
             <StatusBar style="dark" />
             <InnerContainer>
                 <CenteredView>
-                    <PageTitle>Login rentTracker</PageTitle>
+                    <StrongText>Login</StrongText>
+                    <PageTitle>rentTracker</PageTitle>
+                    <SmallSpaceBreak />
                     <LoginButton>
                         <View>
                             <AntDesign name="google" size={24} color="black" />

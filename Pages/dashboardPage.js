@@ -10,10 +10,6 @@ import {
     OuterShadowBox,
     PageTitle,
     StrongText,
-    CenteredView,
-    LoginButton,
-    GoogleIcon,
-    SmallSpaceBreak,
     HorizontalView,
     ModalButton,
     ModalView
@@ -27,11 +23,13 @@ import AddBill from "../Modals/addBill";
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//formik
-import { Formik } from 'formik';
-
 //icon
 import { Ionicons, Entypo } from '@expo/vector-icons';
+
+//redux test: counter & tenant
+import CounterWrapper from "../Counter/Counter";
+import ArrayRedWrapper from "../ArrayRed/AddArray";
+
 
 
 //create new tenant
@@ -48,15 +46,17 @@ const createTenant = async (value) => {
 
 const Dashboard = () => {
 
+    //modal state
     const [addTenantModal, setAddTenantModal] = useState(false);
     const closeAddTenantModal = () => {
         setAddTenantModal(false);
     }
-
     const [addBillModal, setAddBillModal] = useState(false);
     const closeAddBillModal = () => {
         setAddBillModal(false);
     }
+
+
 
     return (
         <StyledContainer>
@@ -136,6 +136,9 @@ const Dashboard = () => {
                     <InnerShadowBox>
                         <StrongText>Bills:</StrongText>
                         {/* SUMMARY OF BILL DETAILS */}
+
+                        <ArrayRedWrapper />
+                        
                     </InnerShadowBox>
                 </OuterShadowBox>
 
