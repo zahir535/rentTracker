@@ -11,14 +11,14 @@ import {
 } from './../UiComponents/uiComponents';
 
 //redux
-import { useSelector, Provider } from 'react-redux';
+import { useSelector, Provider, useDispatch } from 'react-redux';
 import {
     selectTenant,
     selectBill,
     updateTotalBill,
+    selectTotalbill,
 } from './reduxSlice';
 import Store from './storeRedux';
-import { parseInterpolation } from 'react-native/Libraries/LogBox/Data/parseLogBoxLog';
 
 
 
@@ -27,25 +27,35 @@ const Summary = () => {
     //get tenant data
     const data = useSelector(selectTenant)
     //get bill data
-    // const billData = useSelector(selectBill)
-    
+    const billData = useSelector(selectBill)
+
+    //get totalbilldata
+    const totalBillRedux = useSelector(selectTotalbill)
+
+    //dispatch
+    const dispatch = useDispatch()
+
 
     // //calculate total bill
-    // const calcTotal = () => {
+    const calcTotal = () => {
 
-    //     const bill = billData.slice();
-    //     const totalBill = 0;
+        //init sumOfAll val
+        let sumOfAll = 0;
 
-    //     //iterate billData array
-    //     bill.map(
-    //         (item) => {
-    //             totalBill += parseInt(item.totalBill);
-    //             console.log(item.totalBill)
-    //         }
-    //     );
+        //iterate billData array
+        billData.forEach(element => {
+            sumOfAll += element.billTotal;
+        });
 
-    //     return totalBill;
-    // }
+        dispatch(updateTotalBill(sumOfAll))
+
+    }
+
+    //useeffect
+    useEffect(() => {
+        calcTotal()
+    }, [billData]);
+
 
     return (
         <View>
@@ -65,7 +75,7 @@ const Summary = () => {
                 </LeftView>
             </HorizontalView>
 
-            
+
 
             {data.map(
                 (item, i) => {
@@ -87,9 +97,9 @@ const Summary = () => {
                 }
             )}
 
-                <HorizontalViewEnd style={{marginTop: 24,}} >
-                    <HalfNormalText>Total bill: </HalfNormalText>
-                </HorizontalViewEnd>
+            <HorizontalViewEnd style={{ marginTop: 24, }} >
+                <HalfNormalText>Total bill: {totalBillRedux}</HalfNormalText>
+            </HorizontalViewEnd>
         </View>
     );
 }

@@ -170,6 +170,13 @@ export const ModalButton = styled(TouchableOpacity)`
     marginHorizontal: 2px;
 `;
 
+export const SquareButton = styled(TouchableOpacity)`
+    padding: 12px;
+    borderWidth: 1px;
+    marginBottom: 24px;
+    marginTop:12px;
+`;
+
 // -------------------------------- IMG/ICON ---------------------------------
 
 export const GoogleIcon = styled(Image)`
@@ -183,6 +190,14 @@ export const GoogleIcon = styled(Image)`
 export const InputField = styled(TextInput)`
     padding: 12px;
     width: 100%;
+    marginBottom: 24px;
+    marginTop:12px;
+    borderWidth: 1px;
+`;
+
+export const InputFieldArray = styled(TextInput)`
+    padding: 12px;
+    width: 80%;
     marginBottom: 24px;
     marginTop:12px;
     borderWidth: 1px;

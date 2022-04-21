@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, Text } from 'react-native';
 
 //import UI
 import {
@@ -11,7 +11,11 @@ import {
     AddTenantButton,
     SpaceBreak,
     ModalButton,
-    HorizontalViewTop
+    HorizontalViewTop,
+    HorizontalView,
+    SmallSpaceBreak,
+    SquareButton,
+    InputFieldArray,
 } from './../UiComponents/uiComponents';
 
 //formik
@@ -60,12 +64,12 @@ const AddBill = ({ props, closeAddBillModal }) => {
         newBill.billName = billName;
         newBill.billTotal = parseInt(billTotal);
         newBill.billDate = date;
-        newBill.paidby = paidby;
+        newBill.paidby = " @ ";
 
-        console.log(newBill)
+        //console.log(newBill)
 
         //save to redux
-        let newArray = [ ...data, newBill];
+        let newArray = [...data, newBill];
         dispatch(addBill(newArray))
 
         //after saved data - closed modal
@@ -79,6 +83,20 @@ const AddBill = ({ props, closeAddBillModal }) => {
         ToastAndroid.show("New bill saved !",
             ToastAndroid.SHORT);
     };
+
+    //local state to ad payadv & topay
+    const [typedToPay, setTypedToPay] = useState("");
+    const [localToPay, setLocalToPay] = useState([]);
+    const [typedPayAdv, setTypedPayAdv] = useState("");
+    const [localPayAdv, setLocalPayAdv] = useState([]);
+
+    const handleToPay = () => {
+        let newArray = localToPay;
+        // newArray.push(typedToPay)
+        // setLocalToPay(newArray)
+        // setTypedToPay("")
+        console.log(typeof localToPay)
+    }
 
     return (
         <InnerContainer>
@@ -95,9 +113,9 @@ const AddBill = ({ props, closeAddBillModal }) => {
                 </ModalButton>
             </HorizontalViewTop>
 
+            <SmallSpaceBreak></SmallSpaceBreak>
 
-            <SpaceBreak></SpaceBreak>
-
+            {/**FORMIK BILL NAME & BILL TOTAL */}
             <Formik
                 initialValues={{
                     billName: '',
@@ -105,7 +123,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
                     paidby: '',
                 }}
                 onSubmit={values => {
-                    console.log(values)
+                    //console.log(values)
                     addBillSubmit(values)
                 }}
             >
@@ -126,7 +144,84 @@ const AddBill = ({ props, closeAddBillModal }) => {
                             value={values.billTotal.toString()}
                             keyboardType='numeric'
                         />
-                        <NormalText>Paid By:</NormalText>
+
+                        {/**FORMIK LIST TOPAY & PAYADV */}
+                        <NormalText>Paid By:  [  ]</NormalText>
+                        <HorizontalView>
+                            <InputFieldArray
+                                placeholder='paid by'
+                                onChangeText={setTypedPayAdv}
+                                //onBlur={handleBlur('paidby')}
+                                value={typedPayAdv}
+                            />
+                            <SquareButton
+                                onPress={() => {
+
+                                }}
+                            >
+                                <StrongText>+</StrongText>
+                            </SquareButton>
+                        </HorizontalView>
+
+                        <NormalText>To Pay:  [ {localToPay} ]</NormalText>
+                        <HorizontalView>
+                            <InputFieldArray
+                                placeholder='to pay'
+                                onChangeText={setTypedToPay}
+                                //onBlur={handleBlur('paidby')}
+                                value={typedToPay}
+                            />
+                            <SquareButton
+                                onPress={() => {
+                                    handleToPay()
+                                }}
+                            >
+                                <StrongText>+</StrongText>
+                            </SquareButton>
+                        </HorizontalView>
+
+
+
+
+                        <AddTenantButton
+                            onPress={handleSubmit} title="Submit"
+                        >
+                            <StrongText>Add Bill</StrongText>
+                        </AddTenantButton>
+                    </View>
+                )}
+            </Formik>
+
+
+            {/**FORMIK LIST TOPAY & PAYADV */}
+            {/* <Formik
+                initialValues={{
+                    toPay: [],
+                    payAdv: [],
+                }}
+                onSubmit={values => {
+                    //console.log(values)
+                    addBillSubmit(values)
+                }}
+            >
+                {({ handleChange, handleBlur, handleSubmit, values }) => (
+                    <View>
+                        <NormalText>Bill Name:</NormalText>
+                        <InputField
+                            placeholder='bill Name'
+                            onChangeText={handleChange('billName')}
+                            onBlur={handleBlur('billName')}
+                            value={values.billName}
+                        />
+                        <NormalText>Bill Total:</NormalText>
+                        <InputField
+                            placeholder='bill Total'
+                            onChangeText={handleChange('billTotal')}
+                            onBlur={handleBlur('billTotal')}
+                            value={values.billTotal.toString()}
+                            keyboardType='numeric'
+                        />
+                        <NormalText>Paid By:  [ ]</NormalText>
                         <InputField
                             placeholder='paid by'
                             onChangeText={handleChange('paidby')}
@@ -140,14 +235,15 @@ const AddBill = ({ props, closeAddBillModal }) => {
                         </AddTenantButton>
                     </View>
                 )}
-            </Formik>
+            </Formik> */}
+
 
         </InnerContainer>
     );
 }
 
-const AddBillWrapper = ({closeAddBillModal}) => {
-    return(
+const AddBillWrapper = ({ closeAddBillModal }) => {
+    return (
         <Provider store={Store}>
             <AddBill closeAddBillModal={closeAddBillModal} />
         </Provider>
