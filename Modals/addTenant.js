@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, ToastAndroid } from 'react-native';
 
 //import UI
 import {
-    StyledContainer,
-    OuterShadowBox,
-    InnerShadowBox,
     InnerContainer,
     PageTitle,
     StrongText,
@@ -24,29 +21,43 @@ import { Formik } from 'formik';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-//onsubmit
-const addTenant = async (values) => {
-
-    //getTenantdatafirst
-
-    const { name } = values;
-    //check if stored value key exists or not
-
-    let newTenant = {}
-    newTenant.name = name;
-    newTenant.payAdv = 0;
-    newTenant.toPay = 0;
-
-
-    try {
-        const jsonValue = JSON.stringify(newTenant)
-        await AsyncStorage.setItem('@storage_Key', jsonValue)
-    } catch (e) {
-        console.log("Error when create new tenant" + e)
-    }
-}
 
 const AddTenant = ({ props, closeAddTenantModal }) => {
+
+    //onsubmit tenant
+    const addTenantSubmit = (values) => {
+
+        //getTenantdatafirst
+
+
+        //destructure formik values
+        const { name } = values;
+
+        //create new tenant object
+        let newTenant = {}
+        newTenant.name = name;
+        newTenant.payAdv = 0;
+        newTenant.toPay = 0;
+
+        //save to async
+        // try {
+        //     const jsonValue = JSON.stringify(newTenant)
+        //     await AsyncStorage.setItem('@storage_Key', jsonValue)
+        // } catch (e) {
+        //     console.log("Error when create new tenant" + e)
+        // }
+
+        //after tenant data saved - close modal
+        closeAddTenantModal()
+        showToast()
+    }
+
+    //toast message
+    const showToast = () => {
+        ToastAndroid.show("New tenant added !",
+            ToastAndroid.SHORT);
+    };
+
     return (
         <InnerContainer>
 
@@ -55,7 +66,6 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
                 <ModalButton
                     onPress={() => {
                         closeAddTenantModal()
-                        // console.log("add tenant modal closed!")
                     }}
 
                 >
@@ -69,8 +79,7 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
             <Formik
                 initialValues={{ name: '' }}
                 onSubmit={values => {
-                    console.log(values)
-                    addTenant(values)
+                    addTenantSubmit(values)
                 }}
             >
                 {({ handleChange, handleBlur, handleSubmit, values }) => (

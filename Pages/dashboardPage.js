@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TextInput, Modal } from 'react-native';
+import { View, Text, TextInput, Modal, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 //import UI
@@ -21,12 +21,17 @@ import {
 
 //addtenant modal
 import AddTenant from "../Modals/addTenant";
+//addbill modal
+import AddBill from "../Modals/addBill";
 
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //formik
 import { Formik } from 'formik';
+
+//icon
+import { Ionicons, Entypo } from '@expo/vector-icons';
 
 
 //create new tenant
@@ -46,6 +51,11 @@ const Dashboard = () => {
     const [addTenantModal, setAddTenantModal] = useState(false);
     const closeAddTenantModal = () => {
         setAddTenantModal(false);
+    }
+
+    const [addBillModal, setAddBillModal] = useState(false);
+    const closeAddBillModal = () => {
+        setAddBillModal(false);
     }
 
     return (
@@ -72,22 +82,60 @@ const Dashboard = () => {
 
                 </Modal>
 
+                {/* MODAL CODE TO ADD NEW BILL*/}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={addBillModal}
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                        setAddBillModal(!addBillModal);
+                    }}
+                >
+                    <ModalView>
+                        <AddBill
+                            closeAddBillModal={closeAddBillModal}
+                        />
+                    </ModalView>
+
+
+                </Modal>
+
                 <HorizontalView>
                     <PageTitle>Dashboard</PageTitle>
-                    <ModalButton
-                        onPress={() => {
-                            // console.log("Add tenant modal invoked!")
-                            setAddTenantModal(true);
-                        }}
-                    >
-                        <PageTitle>+</PageTitle>
-                    </ModalButton>
+
+                    <HorizontalView>
+                        <ModalButton
+                            onPress={() => {
+                                // console.log("Add tenant modal invoked!")
+                                setAddTenantModal(true)
+                            }}
+                        >
+                            <Ionicons name="person-add" size={24} color="black" />
+                        </ModalButton>
+
+                        <ModalButton
+                            onPress={() => {
+                                setAddBillModal(true)
+                            }}
+                        >
+                            <Entypo name="add-to-list" size={24} color="black" />
+                        </ModalButton>
+                    </HorizontalView>
                 </HorizontalView>
 
                 <OuterShadowBox>
                     <InnerShadowBox>
                         <StrongText>Summary:</StrongText>
                         {/* SUMMARY OF TENANT NAME & DETAILS */}
+                    </InnerShadowBox>
+                </OuterShadowBox>
+
+
+                <OuterShadowBox>
+                    <InnerShadowBox>
+                        <StrongText>Bills:</StrongText>
+                        {/* SUMMARY OF BILL DETAILS */}
                     </InnerShadowBox>
                 </OuterShadowBox>
 

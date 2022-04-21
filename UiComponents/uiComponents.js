@@ -39,14 +39,14 @@ export const StyledContainer = styled(View)`
     paddingTop: ${20 + 10}px;
     background-color: ${primary};
 `
+
+export const OuterShadowBox = styled.View`
+    marginTop: 22px;
+`;
+
 export const InnerContainer = styled(View)`
     flex: 1;
     width: 100%;
-`;
-
-export const OuterShadowBox = styled.View`
-    flex: 1;
-    marginTop: 22px;
 `;
 
 export const InnerShadowBox = styled(View)`
@@ -128,7 +128,7 @@ export const LoginButton = styled(TouchableOpacity)`
 
 export const AddTenantButton = styled(TouchableOpacity)`
     padding: 12px;
-    marginHorizontal: 36px;
+    width: 100%;
     marginTop: 20px;
     borderWidth: 1px;
     borderRadius: 36px;
@@ -138,6 +138,7 @@ export const AddTenantButton = styled(TouchableOpacity)`
 
 export const ModalButton = styled(TouchableOpacity)`
     padding: 12px;
+    marginHorizontal: 2px;
 `;
 
 // -------------------------------- IMG/ICON ---------------------------------

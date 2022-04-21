@@ -39,3 +39,10 @@ git push -u origin main
 git remote add origin https://github.com/zahir535/dropship-POS.git
 git branch -M main
 git push -u origin main
+
+
+//GIT BUG
+*"The tip of your current branch is behind its remote counterpart"*
+SOLUTION: {
+    cmd: git push -f origin <main branch name>/main/master
+}
