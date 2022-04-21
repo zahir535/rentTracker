@@ -11,7 +11,7 @@ import {
     AddTenantButton,
     SpaceBreak,
     ModalButton,
-    HorizontalView
+    HorizontalViewTop
 } from './../UiComponents/uiComponents';
 
 //formik
@@ -20,14 +20,22 @@ import { Formik } from 'formik';
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-
-
-
-
+//redux
+import { useSelector, useDispatch, Provider } from 'react-redux';
+import {
+    selectTenant,
+    addBill,
+    selectBill,
+} from './../Redux/reduxSlice';
+import Store from './../Redux/storeRedux';
 
 
 const AddBill = ({ props, closeAddBillModal }) => {
+
+    //redux dispatch
+    const dispatch = useDispatch();
+    //getBilldatafirst
+    const data = useSelector(selectBill)
 
     //onsubmit bills
     const addBillSubmit = (values) => {
@@ -43,27 +51,22 @@ const AddBill = ({ props, closeAddBillModal }) => {
         const date = dayOfMonth + "/" + monthOfYear + "/" + year;
 
         //get current all bill length from async
-        let current = 0;
-        let newBillNo = current + 1;
+        let length = data.length;
+        let newBillNo = length + 1;
 
         //create new bill object
         let newBill = {}
-        newBill.billNo = newBillNo;
+        newBill.billNo = parseInt(newBillNo);
         newBill.billName = billName;
-        newBill.billTotal = billTotal;
+        newBill.billTotal = parseInt(billTotal);
         newBill.billDate = date;
-        newBill.paidby = "";
+        newBill.paidby = paidby;
 
         console.log(newBill)
 
-
-        //save to async
-        // try {
-        //     const jsonValue = JSON.stringify(newTenant)
-        //     await AsyncStorage.setItem('@storage_Key', jsonValue)
-        // } catch (e) {
-        //     console.log("Error when create new tenant" + e)
-        // }
+        //save to redux
+        let newArray = [ ...data, newBill];
+        dispatch(addBill(newArray))
 
         //after saved data - closed modal
         closeAddBillModal()
@@ -80,7 +83,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
     return (
         <InnerContainer>
 
-            <HorizontalView>
+            <HorizontalViewTop>
                 <PageTitle>Add New bill</PageTitle>
                 <ModalButton
                     onPress={() => {
@@ -90,7 +93,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
                 >
                     <PageTitle>X</PageTitle>
                 </ModalButton>
-            </HorizontalView>
+            </HorizontalViewTop>
 
 
             <SpaceBreak></SpaceBreak>
@@ -143,4 +146,12 @@ const AddBill = ({ props, closeAddBillModal }) => {
     );
 }
 
-export default AddBill;
+const AddBillWrapper = ({closeAddBillModal}) => {
+    return(
+        <Provider store={Store}>
+            <AddBill closeAddBillModal={closeAddBillModal} />
+        </Provider>
+    );
+}
+
+export default AddBillWrapper;

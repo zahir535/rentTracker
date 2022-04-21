@@ -10,15 +10,17 @@ import {
     OuterShadowBox,
     PageTitle,
     StrongText,
-    HorizontalView,
+    HorizontalViewTop,
     ModalButton,
-    ModalView
+    ModalView,
+    ScrollList,
+    SpaceBreak
 } from './../UiComponents/uiComponents';
 
 //addtenant modal
-import AddTenant from "../Modals/addTenant";
+import AddTenantWrapper from "../Modals/addTenant";
 //addbill modal
-import AddBill from "../Modals/addBill";
+import AddBillWrapper from "../Modals/addBill";
 
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,27 +28,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //icon
 import { Ionicons, Entypo } from '@expo/vector-icons';
 
-//redux test: counter & tenant
-import CounterWrapper from "../Counter/Counter";
-import ArrayRedWrapper from "../ArrayRed/AddArray";
+//redux
+import { useSelector, useDispatch, Provider } from 'react-redux';
+import {
+    addTenant,
+    selectTenant,
+    selectTenantModal,
+    selectBill,
+} from './../Redux/reduxSlice';
+import Store from './../Redux/storeRedux';
 
 
-
-//create new tenant
-const createTenant = async (value) => {
-    try {
-        const jsonValue = JSON.stringify(value)
-        await AsyncStorage.setItem('@tenant', jsonValue)
-    } catch (e) {
-        console.log("Error when create new tenant" + e)
-    }
-}
-
+//show data dashboard
+import SummaryWrapper from '../Redux/SummaryWrapper';
+import BillWrapper from "../Redux/BillWrapper";
 
 
 const Dashboard = () => {
 
-    //modal state
+    //modal state using usestate
     const [addTenantModal, setAddTenantModal] = useState(false);
     const closeAddTenantModal = () => {
         setAddTenantModal(false);
@@ -55,7 +55,6 @@ const Dashboard = () => {
     const closeAddBillModal = () => {
         setAddBillModal(false);
     }
-
 
 
     return (
@@ -74,7 +73,7 @@ const Dashboard = () => {
                     }}
                 >
                     <ModalView>
-                        <AddTenant
+                        <AddTenantWrapper
                             closeAddTenantModal={closeAddTenantModal}
                         />
                     </ModalView>
@@ -93,7 +92,7 @@ const Dashboard = () => {
                     }}
                 >
                     <ModalView>
-                        <AddBill
+                        <AddBillWrapper
                             closeAddBillModal={closeAddBillModal}
                         />
                     </ModalView>
@@ -101,10 +100,10 @@ const Dashboard = () => {
 
                 </Modal>
 
-                <HorizontalView>
+                <HorizontalViewTop>
                     <PageTitle>Dashboard</PageTitle>
 
-                    <HorizontalView>
+                    <HorizontalViewTop>
                         <ModalButton
                             onPress={() => {
                                 // console.log("Add tenant modal invoked!")
@@ -121,26 +120,31 @@ const Dashboard = () => {
                         >
                             <Entypo name="add-to-list" size={24} color="black" />
                         </ModalButton>
-                    </HorizontalView>
-                </HorizontalView>
+                    </HorizontalViewTop>
+                </HorizontalViewTop>
 
-                <OuterShadowBox>
-                    <InnerShadowBox>
-                        <StrongText>Summary:</StrongText>
-                        {/* SUMMARY OF TENANT NAME & DETAILS */}
-                    </InnerShadowBox>
-                </OuterShadowBox>
+                <ScrollList>
+                    <OuterShadowBox>
+                        <InnerShadowBox>
+                            <StrongText>Summary: </StrongText>
+                            {/* SUMMARY OF TENANT NAME & DETAILS */}
+                            <SummaryWrapper />
+                        </InnerShadowBox>
+                    </OuterShadowBox>
+
+                    <ScrollList>
+                        <OuterShadowBox>
+                            <InnerShadowBox>
+                                <StrongText>Bills:</StrongText>
+                                {/* SUMMARY OF BILL DETAILS */}
+                                <BillWrapper />
+                            </InnerShadowBox>
+                        </OuterShadowBox>
+                        <SpaceBreak />
+                    </ScrollList>
+                </ScrollList>
 
 
-                <OuterShadowBox>
-                    <InnerShadowBox>
-                        <StrongText>Bills:</StrongText>
-                        {/* SUMMARY OF BILL DETAILS */}
-
-                        <ArrayRedWrapper />
-                        
-                    </InnerShadowBox>
-                </OuterShadowBox>
 
 
 

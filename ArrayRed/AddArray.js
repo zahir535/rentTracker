@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Button, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 
 //redux
 import { useSelector, useDispatch, Provider } from 'react-redux';
@@ -7,8 +7,8 @@ import {
     addTenant,
     selectTenant,
 } from './arraySlice';
-
 import Store from './../ArrayRed/storeArray';
+
 
 
 const ArrayRed = () => {
@@ -27,27 +27,27 @@ const ArrayRed = () => {
 
     return (
         <View>
-            <Text>ArrayRed ! </Text>
-
-            <View style={{marginVertical: 18,}} >
-                <Text>{data.map(
-                    (item, i) => {
-                        return(
-                            <View key={i}>
+            {data.map(
+                (item, i) => {
+                    return (
+                        <View key={i} style={{marginTop: 12,}}>
+                            <View>
                                 <Text>Name:  {item.name} </Text>
-                                <Text>toPay: {item.toPay}    payAdv: {item.payAdv}</Text>
+                                <Text>toPay:{item.toPay}    payAdv:{item.payAdv}</Text>
                             </View>
-                        );
-                    }
-                )}</Text>
-            </View>
+                            <View style={{
+                                marginVertical: 12,
+                            }} />
+                        </View>
+                    );
+                }
+            )}
 
             <TouchableOpacity
                 style={{ padding: 8, borderWidth: 1, marginTop: 12, }}
                 onPress={() => {
                     let newArray = [...data, newObj];
-                    addTenant(newArray)
-                    console.log(data)
+                    dispatch(addTenant(newArray))
                 }}
             >
                 <Text>Add tenant</Text>

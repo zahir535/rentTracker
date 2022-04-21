@@ -11,7 +11,7 @@ import {
     AddTenantButton,
     SpaceBreak,
     ModalButton,
-    HorizontalView
+    HorizontalViewTop
 } from './../UiComponents/uiComponents';
 
 //formik
@@ -20,32 +20,40 @@ import { Formik } from 'formik';
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//redux
+import { useSelector, useDispatch, Provider } from 'react-redux';
+import {
+    addTenant,
+    selectTenant,
+} from './../Redux/reduxSlice';
+import Store from './../Redux/storeRedux';
+
 
 
 const AddTenant = ({ props, closeAddTenantModal }) => {
 
+    //redux dispatch
+    const dispatch = useDispatch();
+    //getTenantdatafirst
+    const data = useSelector(selectTenant)
+    const arrayLength = data.length;
+
     //onsubmit tenant
     const addTenantSubmit = (values) => {
-
-        //getTenantdatafirst
-
 
         //destructure formik values
         const { name } = values;
 
         //create new tenant object
         let newTenant = {}
+        newTenant.id = arrayLength + 1;
         newTenant.name = name;
-        newTenant.payAdv = 0;
         newTenant.toPay = 0;
+        newTenant.payAdv = 0;
 
-        //save to async
-        // try {
-        //     const jsonValue = JSON.stringify(newTenant)
-        //     await AsyncStorage.setItem('@storage_Key', jsonValue)
-        // } catch (e) {
-        //     console.log("Error when create new tenant" + e)
-        // }
+        //dispatch new array that contains new data
+        let newArray = [...data, newTenant];
+        dispatch(addTenant(newArray))
 
         //after tenant data saved - close modal
         closeAddTenantModal()
@@ -61,7 +69,7 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
     return (
         <InnerContainer>
 
-            <HorizontalView>
+            <HorizontalViewTop>
                 <PageTitle>Add New Tenant</PageTitle>
                 <ModalButton
                     onPress={() => {
@@ -71,7 +79,7 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
                 >
                     <PageTitle>X</PageTitle>
                 </ModalButton>
-            </HorizontalView>
+            </HorizontalViewTop>
 
 
             <SpaceBreak></SpaceBreak>
@@ -104,4 +112,14 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
     );
 }
 
-export default AddTenant;
+const AddTenantWrapper = ({ closeAddTenantModal }) => {
+    return (
+        <Provider store={Store}>
+            <AddTenant
+                closeAddTenantModal={closeAddTenantModal}
+            />
+        </Provider>
+    );
+}
+
+export default AddTenantWrapper;

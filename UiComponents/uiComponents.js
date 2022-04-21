@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Image,
-    TextInput
+    TextInput,
+    ScrollView,
 } from 'react-native';
 
 import { Constants } from 'expo-constants';
@@ -66,6 +67,12 @@ export const CenteredView = styled(View)`
     textAlignVertical: center;
 `;
 
+export const LeftView = styled(CenteredView)`
+    flex: 1;
+    width: 100%;
+    justifyContent: flex-start;
+`;
+
 export const SpaceBreak = styled(View)`
     height: 30px;
     width: 100%;
@@ -79,7 +86,14 @@ export const SmallSpaceBreak = styled(View)`
 export const HorizontalView = styled(View)`
     flexDirection: row;
     justifyContent: space-between;
+`;
+
+export const HorizontalViewTop = styled(HorizontalView)`
     alignItems: center;
+`;
+
+export const HorizontalViewEnd = styled(HorizontalView)`
+    justifyContent: flex-start;
 `;
 
 export const ModalView = styled(View)`
@@ -112,6 +126,21 @@ export const StrongText = styled(Text)`
 export const NormalText = styled(Text)`
     color: ${dark};
     fontSize: 18px;
+`;
+
+export const HalfNormalText = styled(NormalText)`
+    opacity: 0.7;
+`;
+
+export const LineNormalText = styled(NormalText)`
+    opacity: 0.2;
+`;
+
+// -------------------------------- SCROLLVIEW ---------------------------------
+
+export const ScrollList = styled(ScrollView)`
+    flex: 1;
+    width: 100%;
 `;
 
 
