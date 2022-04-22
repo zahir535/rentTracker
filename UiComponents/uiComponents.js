@@ -109,6 +109,23 @@ export const ModalView = styled(View)`
     elevation: 5;
 `;
 
+export const PickerWrapper = styled(View)`
+    marginBottom: 32px;
+    marginTop: 8px;
+    borderWidth: 1px;
+    borderRadius: 4px;
+    width: 100%;
+`;
+
+export const ToPayWrapper = styled(View)`
+    alignItems: flex-start;
+    flexDirection: row;
+    flexWrap: wrap;
+    width: 100%;
+    marginTop: 8px;
+    marginRight:8px;
+`;
+
 // -------------------------------- TEXT ---------------------------------
 
 export const PageTitle = styled(Text)`
@@ -134,6 +151,13 @@ export const HalfNormalText = styled(NormalText)`
 
 export const LineNormalText = styled(NormalText)`
     opacity: 0.2;
+`;
+
+export const ButtonCenterText = styled(Text)`
+    fontSize: 15px;
+    justifyContent: center;
+    alignItems: center;
+    opacity: 0.8;
 `;
 
 // -------------------------------- SCROLLVIEW ---------------------------------
@@ -175,6 +199,16 @@ export const SquareButton = styled(TouchableOpacity)`
     borderWidth: 1px;
     marginBottom: 24px;
     marginTop:12px;
+`;
+
+export const ToPayButton = styled(TouchableOpacity)`
+    paddingVertical: 3px;
+    paddingHorizontal: 10px;
+    borderWidth: 1px;
+    borderRadius: 32px;
+    marginHorizontal: 4px;
+    opacity: 0.8;
+    marginVertical: 4px;
 `;
 
 // -------------------------------- IMG/ICON ---------------------------------

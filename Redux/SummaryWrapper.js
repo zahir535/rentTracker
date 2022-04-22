@@ -8,6 +8,8 @@ import {
     HalfNormalText,
     SmallSpaceBreak,
     HorizontalViewEnd,
+    NormalText,
+    StrongText,
 } from './../UiComponents/uiComponents';
 
 //redux
@@ -75,22 +77,22 @@ const Summary = () => {
                 </LeftView>
             </HorizontalView>
 
-
+            <SmallSpaceBreak />
 
             {data.map(
                 (item, i) => {
                     return (
                         <HorizontalView key={i} >
                             <LeftView>
-                                <HalfNormalText>{item.name}</HalfNormalText>
+                                <NormalText>{item.name}</NormalText>
                             </LeftView>
 
                             <LeftView>
-                                <HalfNormalText>{item.toPay}</HalfNormalText>
+                                <NormalText>{item.toPay}</NormalText>
                             </LeftView>
 
                             <LeftView>
-                                <HalfNormalText>{item.payAdv}</HalfNormalText>
+                                <NormalText>{item.payAdv}</NormalText>
                             </LeftView>
                         </HorizontalView>
                     );
@@ -98,7 +100,7 @@ const Summary = () => {
             )}
 
             <HorizontalViewEnd style={{ marginTop: 24, }} >
-                <HalfNormalText>Total bill: {totalBillRedux}</HalfNormalText>
+                <StrongText>Total bill: {totalBillRedux}</StrongText>
             </HorizontalViewEnd>
         </View>
     );

@@ -16,6 +16,11 @@ import {
     SmallSpaceBreak,
     SquareButton,
     InputFieldArray,
+    PickerWrapper,
+    ScrollList,
+    ButtonCenterText,
+    ToPayWrapper,
+    ToPayButton,
 } from './../UiComponents/uiComponents';
 
 //formik
@@ -30,8 +35,14 @@ import {
     selectTenant,
     addBill,
     selectBill,
+    updateToPayState,
+    selectToPayState,
 } from './../Redux/reduxSlice';
 import Store from './../Redux/storeRedux';
+
+//picker
+import { Picker } from '@react-native-picker/picker';
+
 
 
 const AddBill = ({ props, closeAddBillModal }) => {
@@ -40,12 +51,16 @@ const AddBill = ({ props, closeAddBillModal }) => {
     const dispatch = useDispatch();
     //getBilldatafirst
     const data = useSelector(selectBill)
+    //getTenantdata
+    const tenantData = useSelector(selectTenant)
+    //get toPayState
+    const toPayData = useSelector(selectToPayState)
 
     //onsubmit bills
     const addBillSubmit = (values) => {
 
         //destructure formik values
-        const { billName, billTotal, paidby } = values;
+        const { billName, billTotal } = values;
 
         //get date
         const dayOfMonth = new Date().getDate().toString();
@@ -64,19 +79,30 @@ const AddBill = ({ props, closeAddBillModal }) => {
         newBill.billName = billName;
         newBill.billTotal = parseInt(billTotal);
         newBill.billDate = date;
-        newBill.paidby = " @ ";
+        newBill.paidby = selectedPick;
 
-        //console.log(newBill)
+        // console.log(newBill)
+        // console.log(typeof selectedPick)
 
-        //save to redux
-        let newArray = [...data, newBill];
-        dispatch(addBill(newArray))
+        //validation of selectedpick
+        if (selectedPick == null) {
+            ToastAndroid.show("Paid By not selected",
+                ToastAndroid.SHORT);
+        } else {
+            //save to redux bill
+            let newArray = [...data, newBill];
+            dispatch(addBill(newArray))
 
-        //after saved data - closed modal
-        closeAddBillModal()
-        showToast()
+            //update redux tenant data
+            // some function
+
+            //after saved data - closed modal
+            closeAddBillModal()
+            showToast()
+        }
 
     }
+
 
     //toast message
     const showToast = () => {
@@ -84,161 +110,206 @@ const AddBill = ({ props, closeAddBillModal }) => {
             ToastAndroid.SHORT);
     };
 
-    //local state to ad payadv & topay
-    const [typedToPay, setTypedToPay] = useState("");
-    const [localToPay, setLocalToPay] = useState([]);
-    const [typedPayAdv, setTypedPayAdv] = useState("");
-    const [localPayAdv, setLocalPayAdv] = useState([]);
+    //local state picker (payAdv)
+    const [selectedPick, setSelectedPick] = useState();
 
-    const handleToPay = () => {
-        let newArray = localToPay;
-        // newArray.push(typedToPay)
-        // setLocalToPay(newArray)
-        // setTypedToPay("")
-        console.log(typeof localToPay)
+    //local state toPay
+    const [localToPay, setLocalToPay] = useState([]);
+
+    //update local state
+    const allTrueState = () => {
+        localToPay.forEach(element => {
+            element.state = true;
+        });
     }
 
+    //calculation
+    const billCalc = () => {
+    }
+
+    //useEffect
+    useEffect(() => {
+        //update toPayState REDUX if tenant data changed
+        //need to update obj.state = false everytime modal is called
+        let newPayState = [];
+        tenantData.map((item) => {
+            let obj = {};
+            obj.name = item.name;
+            obj.state = false;
+            newPayState.push(obj);
+        })
+
+        //save to lacl state to be used
+        setLocalToPay(newPayState)
+        // console.log(tenantData)
+        // console.log("new State" + newPayState)
+
+        //update new state to redux after tenant data changed
+        dispatch(updateToPayState(newPayState))
+
+    }, [tenantData]);
+
     return (
-        <InnerContainer>
+        <ScrollList>
+            <InnerContainer>
 
-            <HorizontalViewTop>
-                <PageTitle>Add New bill</PageTitle>
-                <ModalButton
-                    onPress={() => {
-                        closeAddBillModal()
+                <HorizontalViewTop>
+                    <PageTitle>Add New bill</PageTitle>
+                    <ModalButton
+                        onPress={() => {
+                            closeAddBillModal()
+                        }}
+
+                    >
+                        <PageTitle>X</PageTitle>
+                    </ModalButton>
+                </HorizontalViewTop>
+
+                <SmallSpaceBreak></SmallSpaceBreak>
+
+                {/**FORMIK BILL NAME & BILL TOTAL */}
+                <Formik
+                    initialValues={{
+                        billName: '',
+                        billTotal: 0,
                     }}
-
+                    onSubmit={values => {
+                        //console.log(values)
+                        addBillSubmit(values)
+                    }}
                 >
-                    <PageTitle>X</PageTitle>
-                </ModalButton>
-            </HorizontalViewTop>
-
-            <SmallSpaceBreak></SmallSpaceBreak>
-
-            {/**FORMIK BILL NAME & BILL TOTAL */}
-            <Formik
-                initialValues={{
-                    billName: '',
-                    billTotal: 0,
-                    paidby: '',
-                }}
-                onSubmit={values => {
-                    //console.log(values)
-                    addBillSubmit(values)
-                }}
-            >
-                {({ handleChange, handleBlur, handleSubmit, values }) => (
-                    <View>
-                        <NormalText>Bill Name:</NormalText>
-                        <InputField
-                            placeholder='bill Name'
-                            onChangeText={handleChange('billName')}
-                            onBlur={handleBlur('billName')}
-                            value={values.billName}
-                        />
-                        <NormalText>Bill Total:</NormalText>
-                        <InputField
-                            placeholder='bill Total'
-                            onChangeText={handleChange('billTotal')}
-                            onBlur={handleBlur('billTotal')}
-                            value={values.billTotal.toString()}
-                            keyboardType='numeric'
-                        />
-
-                        {/**FORMIK LIST TOPAY & PAYADV */}
-                        <NormalText>Paid By:  [  ]</NormalText>
-                        <HorizontalView>
-                            <InputFieldArray
-                                placeholder='paid by'
-                                onChangeText={setTypedPayAdv}
-                                //onBlur={handleBlur('paidby')}
-                                value={typedPayAdv}
+                    {({ handleChange, handleBlur, handleSubmit, values }) => (
+                        <View>
+                            <InputArea
+                                label='Bill name:'
+                                placeholder='bill Name'
+                                onChangeText={handleChange('billName')}
+                                onBlur={handleBlur('billName')}
+                                value={values.billName}
                             />
-                            <SquareButton
-                                onPress={() => {
 
-                                }}
-                            >
-                                <StrongText>+</StrongText>
-                            </SquareButton>
-                        </HorizontalView>
-
-                        <NormalText>To Pay:  [ {localToPay} ]</NormalText>
-                        <HorizontalView>
-                            <InputFieldArray
-                                placeholder='to pay'
-                                onChangeText={setTypedToPay}
-                                //onBlur={handleBlur('paidby')}
-                                value={typedToPay}
+                            <InputArea
+                                label='Bill Total:'
+                                placeholder='bill Total'
+                                onChangeText={handleChange('billTotal')}
+                                onBlur={handleBlur('billTotal')}
+                                value={values.billTotal.toString()}
+                                keyboardType='numeric'
+                            //for password use - security
+                            //secureTextEntry={true}
                             />
-                            <SquareButton
-                                onPress={() => {
-                                    handleToPay()
-                                }}
+
+                            {/* PICKER  */}
+                            <PickerArea
+                                label="Paid By:"
+                                selectedPick={selectedPick}
+                                setSelectedPick={setSelectedPick}
+                                tenantData={tenantData}
+                            />
+
+                            {/* CUSTOM BUTTON & FX */}
+                            <NormalText>To Pay:</NormalText>
+                            <ToPayWrapper>
+                                <ToPayButton
+                                //ERROR : TypeError: Attempted to assign to readonly property.
+                                // onPress={() => {
+                                //     allTrueState()
+                                // }}
+                                >
+                                    <ButtonCenterText>All</ButtonCenterText>
+                                </ToPayButton>
+                                {
+                                    toPayData.map((item, i) => {
+                                        return (
+                                            <ToPayButton key={i} >
+                                                <ButtonCenterText>{item.name}</ButtonCenterText>
+                                            </ToPayButton>
+                                        );
+                                    })
+                                }
+                            </ToPayWrapper>
+
+                            <ToPayArea
+                                label="To Pay:"
+                                toPayData={toPayData}
+                                allTrueState={allTrueState}
+                            />
+
+                            <AddTenantButton
+                                onPress={handleSubmit} title="Submit"
                             >
-                                <StrongText>+</StrongText>
-                            </SquareButton>
-                        </HorizontalView>
+                                <StrongText>Add Bill</StrongText>
+                            </AddTenantButton>
+
+                        </View>
+                    )}
+                </Formik>
 
 
 
+            </InnerContainer>
+        </ScrollList>
 
-                        <AddTenantButton
-                            onPress={handleSubmit} title="Submit"
-                        >
-                            <StrongText>Add Bill</StrongText>
-                        </AddTenantButton>
-                    </View>
-                )}
-            </Formik>
+    );
+}
 
+const InputArea = ({ label, icon, ...props }) => {
+    return (
+        <View>
+            <NormalText>{label}</NormalText>
+            <InputField {...props} />
+        </View>
+    );
+}
 
-            {/**FORMIK LIST TOPAY & PAYADV */}
-            {/* <Formik
-                initialValues={{
-                    toPay: [],
-                    payAdv: [],
-                }}
-                onSubmit={values => {
-                    //console.log(values)
-                    addBillSubmit(values)
-                }}
-            >
-                {({ handleChange, handleBlur, handleSubmit, values }) => (
-                    <View>
-                        <NormalText>Bill Name:</NormalText>
-                        <InputField
-                            placeholder='bill Name'
-                            onChangeText={handleChange('billName')}
-                            onBlur={handleBlur('billName')}
-                            value={values.billName}
-                        />
-                        <NormalText>Bill Total:</NormalText>
-                        <InputField
-                            placeholder='bill Total'
-                            onChangeText={handleChange('billTotal')}
-                            onBlur={handleBlur('billTotal')}
-                            value={values.billTotal.toString()}
-                            keyboardType='numeric'
-                        />
-                        <NormalText>Paid By:  [ ]</NormalText>
-                        <InputField
-                            placeholder='paid by'
-                            onChangeText={handleChange('paidby')}
-                            onBlur={handleBlur('paidby')}
-                            value={values.paidby}
-                        />
-                        <AddTenantButton
-                            onPress={handleSubmit} title="Submit"
-                        >
-                            <StrongText>Add Bill</StrongText>
-                        </AddTenantButton>
-                    </View>
-                )}
-            </Formik> */}
+const PickerArea = ({ label, setSelectedPick, selectedPick, tenantData, ...props }) => {
+    return (
+        <View>
+            <NormalText>{label}</NormalText>
+            <PickerWrapper>
+                <Picker
+                    selectedValue={selectedPick}
+                    onValueChange={(itemValue, itemIndex) =>
+                        setSelectedPick(itemValue)
+                    }>
+                    <Picker.Item label=" --- pick tenant --- " value="null" />
+                    {
+                        tenantData.map((item, i) => {
+                            return (
+                                <Picker.Item label={item.name} value={item.name} key={i} />
+                            );
+                        })
+                    }
+                </Picker>
+            </PickerWrapper>
+        </View>
+    );
+}
 
-
-        </InnerContainer>
+const ToPayArea = ({ label, toPayData, allTrueState, ...props }) => {
+    return (
+        <View>
+            <NormalText>{label}</NormalText>
+            <ToPayWrapper>
+                <ToPayButton
+                //ERROR : TypeError: Attempted to assign to readonly property.
+                // onPress={() => {
+                //     allTrueState()
+                // }}
+                >
+                    <ButtonCenterText>All</ButtonCenterText>
+                </ToPayButton>
+                {
+                    toPayData.map((item, i) => {
+                        return (
+                            <ToPayButton key={i} >
+                                <ButtonCenterText>{item.name}</ButtonCenterText>
+                            </ToPayButton>
+                        );
+                    })
+                }
+            </ToPayWrapper>
+        </View>
     );
 }
 

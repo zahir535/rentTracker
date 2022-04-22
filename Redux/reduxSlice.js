@@ -5,11 +5,10 @@ export const reduxSlice = createSlice({
     name: 'tenant',
     initialState: {
         tenant: [],
-        tenantToPayIndicator: [],
-        tenantPayAdvIndicator: [],
         //tenantModal: false,
         bill: [],
         totalBill: 0,
+        toPayState: [],
     },
     reducers: {
         addTenant: (state, action) => {
@@ -29,29 +28,27 @@ export const reduxSlice = createSlice({
         updateTotalBill: (state, action) => {
             state.totalBill = action.payload;
         },
-        updateToPayindicator: (state, action) => {
-            state.tenantToPayIndicator = action.payload;
-        },
-        updatePayAdvIndicator: (state, action) => {
-            state.tenantPayAdvIndicator = action.payload;
+
+        updateToPayState: (state, action) => {
+            state.toPayState = action.payload;
         },
     },
 })
 
 
 export const {
+
     addTenant,
     addBill,
     updateTotalBill,
-    updateToPayindicator,
-    updatePayAdvIndicator
+    updateToPayState,
+
 } = reduxSlice.actions
 
 export const selectTenant = (state) => state.tenant.tenant
-export const selectTenantModal = (state) => state.tenant.tenantModal
+//export const selectTenantModal = (state) => state.tenant.tenantModal
 export const selectBill = (state) => state.tenant.bill
 export const selectTotalbill = (state) => state.tenant.totalBill
-export const selectToPayIndicator = (state) => state.tenant.tenantToPayIndicator
-export const selectpayAdvIndicator = (state) => state.tenant.tenantPayAdvIndicator
+export const selectToPayState = (state) => state.tenant.toPayState
 
 export default reduxSlice.reducer
