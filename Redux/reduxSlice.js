@@ -14,6 +14,11 @@ export const reduxSlice = createSlice({
         addTenant: (state, action) => {
             state.tenant = action.payload;
         },
+        updateTenant: (state, action) => {
+            state.tenant = action.payload;
+        },
+
+
 
         // openAddTenantModal: (state) => {
         //     state.tenantModal = true;
@@ -42,6 +47,7 @@ export const {
     addBill,
     updateTotalBill,
     updateToPayState,
+    updateTenant,
 
 } = reduxSlice.actions
 

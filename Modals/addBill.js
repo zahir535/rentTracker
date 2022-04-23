@@ -19,8 +19,10 @@ import {
     PickerWrapper,
     ScrollList,
     ButtonCenterText,
+    ButtonCenterTextChecked,
     ToPayWrapper,
     ToPayButton,
+    ToPaybuttonChecked,
 } from './../UiComponents/uiComponents';
 
 //formik
@@ -37,6 +39,8 @@ import {
     selectBill,
     updateToPayState,
     selectToPayState,
+    addTenant,
+    updateTenant,
 } from './../Redux/reduxSlice';
 import Store from './../Redux/storeRedux';
 
@@ -56,6 +60,9 @@ const AddBill = ({ props, closeAddBillModal }) => {
     //get toPayState
     const toPayData = useSelector(selectToPayState)
 
+    //check how many state==true in toPayData
+    let count;
+
     //onsubmit bills
     const addBillSubmit = (values) => {
 
@@ -73,33 +80,208 @@ const AddBill = ({ props, closeAddBillModal }) => {
         let length = data.length;
         let newBillNo = length + 1;
 
+        //get name value only from toPayData
+        let payString = [];
+        toPayData.forEach(element => {
+            payString.push(element.name);
+        });
+
         //create new bill object
         let newBill = {}
         newBill.billNo = parseInt(newBillNo);
         newBill.billName = billName;
-        newBill.billTotal = parseInt(billTotal);
+        newBill.billTotal = parseFloat(billTotal);
         newBill.billDate = date;
         newBill.paidby = selectedPick;
+        newBill.toPayState = payString.toString();
 
         // console.log(newBill)
         // console.log(typeof selectedPick)
 
+
+        //check how many state==true in toPayData
+        //let count = 0;
+        // toPayData.forEach(element => {
+        //     if (element.state == true) {
+        //         count += 1;
+        //     }
+        // });
+
         //validation of selectedpick
-        if (selectedPick == null) {
-            ToastAndroid.show("Paid By not selected",
-                ToastAndroid.SHORT);
+        if (selectedPick == null || count == 0) {
+            if (selectedPick == null) {
+                ToastAndroid.show("Paid By not selected",
+                    ToastAndroid.SHORT);
+            }
+            if (count == 0) {
+                ToastAndroid.show("ToPay not selected",
+                    ToastAndroid.SHORT);
+            }
+
         } else {
             //save to redux bill
             let newArray = [...data, newBill];
             dispatch(addBill(newArray))
 
             //update redux tenant data
-            // some function
+            //calculation
+            billCalcPayAdv(billTotal)
+
+            //billCalcToPay(billTotal)
 
             //after saved data - closed modal
             closeAddBillModal()
             showToast()
+
         }
+    }
+
+
+    //calculation
+    const billCalcPayAdv = (billTotal) => {
+
+
+        //payAdv calc - selectedPick
+        //update tenant REDUX if tenant data name == selectedPick
+        // newTenant.id = arrayLength + 1;
+        // newTenant.name = name;
+        // newTenant.toPay = 0;
+        // newTenant.payAdv = 0;
+        let newTenantData = [];
+        tenantData.forEach(item => {
+            let obj = {};
+            let val = parseFloat(billTotal)
+
+            //condition item.name == selectedPick
+            if (item.name == selectedPick) {
+                //update payAdv value if matched, other value stay original
+                obj.id = item.id;
+                obj.name = item.name;
+                obj.toPay = item.toPay;
+                obj.payAdv = item.payAdv + val;
+
+                console.log("billtotal/val - " + typeof val)
+                console.log(item.name + " / " + val)
+            } else {
+
+                //if not matched, all val original
+                obj.id = item.id;
+                obj.name = item.name;
+                obj.toPay = item.toPay;
+                obj.payAdv = item.payAdv;
+            }
+            newTenantData.push(obj);
+        });
+        // tenantData.map((item) => {
+        //     let obj = {};
+        //     let val = parseFloat(billTotal)
+
+        //     //condition item.name == selectedPick
+        //     if (item.name == selectedPick) {
+        //         obj.id = item.id;
+        //         obj.name = item.name;
+        //         obj.toPay = item.toPay;
+        //         obj.payAdv = item.payAdv + val;
+
+        //         console.log("billtotal/val - " + typeof val)
+        //         console.log(item.name + " / " + val)
+        //     }
+
+        //     newTenantData.push(obj);
+        // })
+
+        //update new state to redux after tenant data changed
+        dispatch(updateTenant(newTenantData))
+
+        console.log("billCalcPayAdv ------------")
+        console.log(newTenantData)
+    }
+    const billCalcToPay = (billTotal) => {
+
+        //toPay calc
+        //update tenant REDUX if item.state from toPayData == true
+        // newTenant.id = arrayLength + 1; -- tenantData Schema
+        // newTenant.name = name;
+        // newTenant.toPay = 0;
+        // newTenant.payAdv = 0;
+        let toPayTenantData = [];
+
+        //check how many state==true in toPayData
+        let count = 0;
+        toPayData.forEach(element => {
+            if (element.state == true) {
+                count += 1;
+            }
+        });
+
+        //only then calc toPayData
+        let dividedVal = billTotal / count;
+        tenantData.forEach(item => {
+            let obj = {};
+            // obj.name = item.name;  -- toPayData Schema
+            // obj.state = false;
+            toPayData.map((element) => {
+                if (element.name == item.name || element.state == true) {
+
+                    // if state == true, sum of toPay, others original val
+                    obj.id = item.id;
+                    obj.name = item.name;
+                    obj.toPay = item.toPay + dividedVal;
+                    obj.payAdv = item.payAdv;
+
+                    console.log("dividedVal - " + typeof dividedVal)
+                    console.log(item.name + " / " + dividedVal)
+
+                } else {
+
+                    //if not matched, assign original val
+                    obj.id = item.id;
+                    obj.name = item.name;
+                    obj.toPay = item.toPay;
+                    obj.payAdv = item.payAdv;
+                }
+            })
+
+            toPayTenantData.push(obj);
+        });
+
+
+        // tenantData.map((item) => {
+        //     let obj = {};
+
+        //     // obj.name = item.name;  -- toPayData Schema
+        //     // obj.state = false;
+        //     toPayData.map((element) => {
+        //         if (item.name == element.name) {
+
+        //             // if matched, sum of toPay, others original val
+        //             obj.id = item.id;
+        //             obj.name = item.name;
+        //             obj.toPay = item.toPay + dividedVal;
+        //             obj.payAdv = item.payAdv;
+
+        //             console.log("dividedVal - " + typeof dividedVal)
+        //             console.log(item.name + " / " + dividedVal)
+
+        //         } else {
+
+        //             //if not matched, assign original val
+        //             obj.id = item.id;
+        //             obj.name = item.name;
+        //             obj.toPay = item.toPay;
+        //             obj.payAdv = item.payAdv;
+        //         }
+        //     })
+
+        //     toPayTenantData.push(obj);
+        // })
+
+        //update new state to redux after tenant data changed
+        dispatch(addTenant(toPayTenantData))
+
+        //console.log("-")
+        // console.log("All tenant data Here ---------------------------")
+        // console.log(tenantData)
 
     }
 
@@ -113,19 +295,58 @@ const AddBill = ({ props, closeAddBillModal }) => {
     //local state picker (payAdv)
     const [selectedPick, setSelectedPick] = useState();
 
-    //local state toPay
-    const [localToPay, setLocalToPay] = useState([]);
-
     //update local state
     const allTrueState = () => {
-        localToPay.forEach(element => {
-            element.state = true;
+        //update toPayState REDUX if tenant data changed
+        //need to update obj.state = true everytime fx is called
+        let newPayState = [];
+        tenantData.map((item) => {
+            let obj = {};
+            obj.name = item.name;
+            obj.state = true;
+            newPayState.push(obj);
+        })
+
+        //update new state to redux after tenant data changed
+        dispatch(updateToPayState(newPayState))
+
+        //update count
+        updateCount()
+    }
+    const updateTenantState = (selectedName) => {
+        //update toPayState REDUX if tenant data changed
+        //need to update obj.state = !item.state for matched selectedName == item.name
+        let newPayState = [];
+        toPayData.map((item) => {
+            let obj = {};
+
+            //conditioned changed for selectedName
+            if (item.name == selectedName) {
+                obj.name = item.name;
+                obj.state = !item.state;
+            } else {
+                obj.name = item.name;
+                obj.state = item.state;
+            }
+            newPayState.push(obj);
+        })
+
+        //update new state to redux after tenant data changed
+        dispatch(updateToPayState(newPayState))
+
+        //update count
+        updateCount()
+    }
+
+    //update count
+    const updateCount = () => {
+        toPayData.forEach(element => {
+            if (element.state == true) {
+                count += 1;
+            }
         });
     }
 
-    //calculation
-    const billCalc = () => {
-    }
 
     //useEffect
     useEffect(() => {
@@ -135,18 +356,14 @@ const AddBill = ({ props, closeAddBillModal }) => {
         tenantData.map((item) => {
             let obj = {};
             obj.name = item.name;
-            obj.state = false;
+            obj.state = true;
             newPayState.push(obj);
         })
-
-        //save to lacl state to be used
-        setLocalToPay(newPayState)
-        // console.log(tenantData)
-        // console.log("new State" + newPayState)
 
         //update new state to redux after tenant data changed
         dispatch(updateToPayState(newPayState))
 
+        // cant put [toPayData] below. The app will crash/ not responding
     }, [tenantData]);
 
     return (
@@ -171,7 +388,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
                 <Formik
                     initialValues={{
                         billName: '',
-                        billTotal: 0,
+                        billTotal: '',
                     }}
                     onSubmit={values => {
                         //console.log(values)
@@ -208,32 +425,14 @@ const AddBill = ({ props, closeAddBillModal }) => {
                             />
 
                             {/* CUSTOM BUTTON & FX */}
-                            <NormalText>To Pay:</NormalText>
-                            <ToPayWrapper>
-                                <ToPayButton
-                                //ERROR : TypeError: Attempted to assign to readonly property.
-                                // onPress={() => {
-                                //     allTrueState()
-                                // }}
-                                >
-                                    <ButtonCenterText>All</ButtonCenterText>
-                                </ToPayButton>
-                                {
-                                    toPayData.map((item, i) => {
-                                        return (
-                                            <ToPayButton key={i} >
-                                                <ButtonCenterText>{item.name}</ButtonCenterText>
-                                            </ToPayButton>
-                                        );
-                                    })
-                                }
-                            </ToPayWrapper>
-
                             <ToPayArea
                                 label="To Pay:"
                                 toPayData={toPayData}
                                 allTrueState={allTrueState}
+                                updateTenantState={updateTenantState}
                             />
+
+                            <SmallSpaceBreak />
 
                             <AddTenantButton
                                 onPress={handleSubmit} title="Submit"
@@ -286,26 +485,47 @@ const PickerArea = ({ label, setSelectedPick, selectedPick, tenantData, ...props
     );
 }
 
-const ToPayArea = ({ label, toPayData, allTrueState, ...props }) => {
+const ToPayArea = ({ label, toPayData, allTrueState, updateTenantState, ...props }) => {
     return (
         <View>
             <NormalText>{label}</NormalText>
             <ToPayWrapper>
+
                 <ToPayButton
-                //ERROR : TypeError: Attempted to assign to readonly property.
-                // onPress={() => {
-                //     allTrueState()
-                // }}
+                    onPress={() => {
+                        allTrueState()
+                    }}
                 >
                     <ButtonCenterText>All</ButtonCenterText>
                 </ToPayButton>
+
+
                 {
                     toPayData.map((item, i) => {
-                        return (
-                            <ToPayButton key={i} >
-                                <ButtonCenterText>{item.name}</ButtonCenterText>
-                            </ToPayButton>
-                        );
+
+                        if (item.state == true) {
+                            return (
+                                <ToPaybuttonChecked key={i}
+                                    onPress={() => {
+                                        updateTenantState(item.name)
+                                    }}
+                                >
+                                    <ButtonCenterTextChecked>{item.name}</ButtonCenterTextChecked>
+                                </ToPaybuttonChecked>
+                            );
+                        }
+                        if (item.state == false) {
+                            return (
+                                <ToPayButton key={i}
+                                    onPress={() => {
+                                        updateTenantState(item.name)
+                                    }}
+                                >
+                                    <ButtonCenterText>{item.name}</ButtonCenterText>
+                                </ToPayButton>
+                            );
+                        }
+
                     })
                 }
             </ToPayWrapper>

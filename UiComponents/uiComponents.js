@@ -160,6 +160,12 @@ export const ButtonCenterText = styled(Text)`
     opacity: 0.8;
 `;
 
+export const ButtonCenterTextChecked = styled(ButtonCenterText)`
+    color: ${primary};
+`;
+
+
+
 // -------------------------------- SCROLLVIEW ---------------------------------
 
 export const ScrollList = styled(ScrollView)`
@@ -209,6 +215,10 @@ export const ToPayButton = styled(TouchableOpacity)`
     marginHorizontal: 4px;
     opacity: 0.8;
     marginVertical: 4px;
+`;
+
+export const ToPaybuttonChecked = styled(ToPayButton)`
+    background-color: ${dark};
 `;
 
 // -------------------------------- IMG/ICON ---------------------------------

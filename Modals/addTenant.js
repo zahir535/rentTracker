@@ -51,13 +51,20 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
         newTenant.toPay = 0;
         newTenant.payAdv = 0;
 
-        //dispatch new array that contains new data
-        let newArray = [...data, newTenant];
-        dispatch(addTenant(newArray))
+        //name input field cant be empty
+        if (name == '') {
+            ToastAndroid.show("Name is empty !",
+                ToastAndroid.SHORT);
+        } else {
+            //dispatch new array that contains new data
+            let newArray = [...data, newTenant];
+            dispatch(addTenant(newArray))
 
-        //after tenant data saved - close modal
-        closeAddTenantModal()
-        showToast()
+            //after tenant data saved - close modal
+            closeAddTenantModal()
+            showToast()
+        }
+
     }
 
     //toast message

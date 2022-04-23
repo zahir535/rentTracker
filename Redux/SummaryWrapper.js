@@ -10,6 +10,8 @@ import {
     HorizontalViewEnd,
     NormalText,
     StrongText,
+    ButtonCenterText,
+    AddTenantButton,
 } from './../UiComponents/uiComponents';
 
 //redux
@@ -19,6 +21,8 @@ import {
     selectBill,
     updateTotalBill,
     selectTotalbill,
+    selectToPayState,
+    updateTenant
 } from './reduxSlice';
 import Store from './storeRedux';
 
@@ -30,7 +34,6 @@ const Summary = () => {
     const data = useSelector(selectTenant)
     //get bill data
     const billData = useSelector(selectBill)
-
     //get totalbilldata
     const totalBillRedux = useSelector(selectTotalbill)
 
@@ -53,10 +56,37 @@ const Summary = () => {
 
     }
 
+    //clear tenant data
+    const clearTenant = () => {
+
+        let newTenantData = [];
+
+
+        data.forEach(item => {
+
+            let obj = {};
+
+            //clear all toPay & payAdv = 0
+            obj.id = item.id;
+            obj.name = item.name;
+            obj.toPay = 0;
+            obj.payAdv = 0;
+
+            newTenantData.push(obj);
+        });
+
+
+
+
+        dispatch(updateTenant(newTenantData))
+    }
+
+
+
     //useeffect
     useEffect(() => {
         calcTotal()
-    }, [billData]);
+    }, [billData, data]);
 
 
     return (
@@ -102,6 +132,15 @@ const Summary = () => {
             <HorizontalViewEnd style={{ marginTop: 24, }} >
                 <StrongText>Total bill: {totalBillRedux}</StrongText>
             </HorizontalViewEnd>
+
+            <AddTenantButton
+                onPress={() => {
+                    clearTenant()
+                }}
+            >
+                <ButtonCenterText>Clear tenant data</ButtonCenterText>
+            </AddTenantButton>
+
         </View>
     );
 }

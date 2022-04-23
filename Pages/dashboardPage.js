@@ -14,7 +14,9 @@ import {
     ModalButton,
     ModalView,
     ScrollList,
-    SpaceBreak
+    SpaceBreak,
+    AddTenantButton,
+    ButtonCenterText,
 } from './../UiComponents/uiComponents';
 
 //addtenant modal
@@ -145,13 +147,13 @@ const Dashboard = () => {
                 </ScrollList>
 
 
-
-
-
             </InnerContainer>
         </StyledContainer>
     );
 }
+
+
+
 
 
 export default Dashboard;
