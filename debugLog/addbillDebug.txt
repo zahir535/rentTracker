@@ -1,0 +1,15 @@
+(toPayState redux) useeffect /
+
+(toPayState redux) alltruestate fx || updatetenantstate fx /
+
+(local state) selectedpick val || PickerArea fx /
+
+addbillsubmit fx 
+- billNo val /
+- billName val /
+- billTotal val /
+- billDate val /
+- paidby val /
+- toPayState val X
+    - updatecount fx X
+

@@ -51,10 +51,17 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
         newTenant.toPay = 0;
         newTenant.payAdv = 0;
 
-        //name input field cant be empty
-        if (name == '') {
-            ToastAndroid.show("Name is empty !",
-                ToastAndroid.SHORT);
+        //name input field cant be empty && length < 8
+        if (name == '' || name.length < 8) {
+            if (name == '') {
+                ToastAndroid.show("Name is empty !",
+                    ToastAndroid.SHORT);
+            }
+            if (name.length < 8) {
+                ToastAndroid.show("Name too long !",
+                    ToastAndroid.SHORT);
+            }
+
         } else {
             //dispatch new array that contains new data
             let newArray = [...data, newTenant];
