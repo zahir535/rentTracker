@@ -17,8 +17,8 @@ import {
 //formik
 import { Formik } from 'formik';
 
-//async
-import AsyncStorage from '@react-native-async-storage/async-storage';
+//keyboardavoiding view
+import KeyboardAvoidingWrapper from '../UiComponents/KeyboardAvoidingWrapper';
 
 //redux
 import { useSelector, useDispatch, Provider } from 'react-redux';
@@ -36,6 +36,7 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
     const dispatch = useDispatch();
     //getTenantdatafirst
     const data = useSelector(selectTenant)
+
     const arrayLength = data.length;
 
     //onsubmit tenant
@@ -51,19 +52,19 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
         newTenant.toPay = 0;
         newTenant.payAdv = 0;
 
+
         //name input field cant be empty && length < 8
-        if (name == '' || name.length < 8) {
+        if (name == '' || name.length > 8) {
             if (name == '') {
                 ToastAndroid.show("Name is empty !",
                     ToastAndroid.SHORT);
             }
-            if (name.length < 8) {
+            if (name.length > 8) {
                 ToastAndroid.show("Name too long !",
                     ToastAndroid.SHORT);
             }
-
         } else {
-            //dispatch new array that contains new data
+            //dispatch new array that contains new data - tenant
             let newArray = [...data, newTenant];
             dispatch(addTenant(newArray))
 
@@ -74,55 +75,58 @@ const AddTenant = ({ props, closeAddTenantModal }) => {
 
     }
 
-    //toast message
+
+    //toast success message
     const showToast = () => {
         ToastAndroid.show("New tenant added !",
             ToastAndroid.SHORT);
     };
 
     return (
-        <InnerContainer>
+        <KeyboardAvoidingWrapper>
+            <InnerContainer>
 
-            <HorizontalViewTop>
-                <PageTitle>Add New Tenant</PageTitle>
-                <ModalButton
-                    onPress={() => {
-                        closeAddTenantModal()
+                <HorizontalViewTop>
+                    <PageTitle>Add New Tenant</PageTitle>
+                    <ModalButton
+                        onPress={() => {
+                            closeAddTenantModal()
+                        }}
+
+                    >
+                        <PageTitle>X</PageTitle>
+                    </ModalButton>
+                </HorizontalViewTop>
+
+
+                <SpaceBreak></SpaceBreak>
+
+                <Formik
+                    initialValues={{ name: '' }}
+                    onSubmit={values => {
+                        addTenantSubmit(values)
                     }}
-
                 >
-                    <PageTitle>X</PageTitle>
-                </ModalButton>
-            </HorizontalViewTop>
+                    {({ handleChange, handleBlur, handleSubmit, values }) => (
+                        <View>
+                            <NormalText>Name:</NormalText>
+                            <InputField
+                                placeholder='name'
+                                onChangeText={handleChange('name')}
+                                onBlur={handleBlur('name')}
+                                value={values.name}
+                            />
+                            <AddTenantButton
+                                onPress={handleSubmit} title="Submit"
+                            >
+                                <StrongText>Add tenant</StrongText>
+                            </AddTenantButton>
+                        </View>
+                    )}
+                </Formik>
 
-
-            <SpaceBreak></SpaceBreak>
-
-            <Formik
-                initialValues={{ name: '' }}
-                onSubmit={values => {
-                    addTenantSubmit(values)
-                }}
-            >
-                {({ handleChange, handleBlur, handleSubmit, values }) => (
-                    <View>
-                        <NormalText>Name:</NormalText>
-                        <InputField
-                            placeholder='name'
-                            onChangeText={handleChange('name')}
-                            onBlur={handleBlur('name')}
-                            value={values.name}
-                        />
-                        <AddTenantButton
-                            onPress={handleSubmit} title="Submit"
-                        >
-                            <StrongText>Add tenant</StrongText>
-                        </AddTenantButton>
-                    </View>
-                )}
-            </Formik>
-
-        </InnerContainer>
+            </InnerContainer>
+        </KeyboardAvoidingWrapper>
     );
 }
 

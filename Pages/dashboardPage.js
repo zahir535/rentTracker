@@ -35,8 +35,10 @@ import { useSelector, useDispatch, Provider } from 'react-redux';
 import {
     addTenant,
     selectTenant,
-    selectTenantModal,
+    addBill,
     selectBill,
+    updateTotalBill,
+    selectTotalbill,
 } from './../Redux/reduxSlice';
 import Store from './../Redux/storeRedux';
 
@@ -44,6 +46,73 @@ import Store from './../Redux/storeRedux';
 //show data dashboard
 import SummaryWrapper from '../Redux/SummaryWrapper';
 import BillWrapper from "../Redux/BillWrapper";
+
+//keyboard avoiding view
+import KeyboardAvoidingWrapper from "../UiComponents/KeyboardAvoidingWrapper";
+
+
+//initiate val from async
+const Init = () => {
+    // dispatch(addBill(newArray))
+    // dispatch(updateTenant(combinedTenantCalc))
+
+    //redux dispatch
+    const dispatch = useDispatch();
+    //getBilldatafirst
+    const data = useSelector(selectBill)
+    //getTenantdata
+    const tenantData = useSelector(selectTenant)
+
+    useEffect(() => {
+        loadBill()
+        loadTenant()
+    }, []);
+
+    //Mybill JSON async
+    const loadBill = async () => {
+        try {
+            let jsonvalue = await AsyncStorage.getItem('@MyBill');
+
+            if (jsonvalue !== null) {
+                //save to redux
+                //E.G = setBill(JSON.parse(jsonvalue));
+                let val = JSON.parse(jsonvalue);
+                dispatch(addBill(val))
+            }
+
+        } catch (err) {
+            alert(err);
+        }
+    }
+
+    //MyTenant JSON async
+    const loadTenant = async () => {
+        try {
+            let jsonvalue = await AsyncStorage.getItem('@MyTenant');
+
+            if (jsonvalue !== null) {
+                //save to redux
+                //E.G = setBill(JSON.parse(jsonvalue));
+                let val = JSON.parse(jsonvalue);
+                dispatch(updateTenant(val))
+            }
+
+        } catch (err) {
+            alert(err);
+        }
+    }
+
+    return null;
+}
+
+//wrapper to enable the use of redux
+const InitWrapper = () => {
+    return (
+        <Provider store={Store}>
+            <Init />
+        </Provider>
+    );
+}
 
 
 const Dashboard = () => {
@@ -58,6 +127,10 @@ const Dashboard = () => {
         setAddBillModal(false);
     }
 
+    useEffect(() => {
+        InitWrapper()
+    }, [])
+
 
     return (
         <StyledContainer>
@@ -70,7 +143,7 @@ const Dashboard = () => {
                     transparent={true}
                     visible={addTenantModal}
                     onRequestClose={() => {
-                        Alert.alert("Modal has been closed.");
+                        //Alert.alert("Modal has been closed.");
                         setAddTenantModal(!addTenantModal);
                     }}
                 >
@@ -83,13 +156,14 @@ const Dashboard = () => {
 
                 </Modal>
 
+
                 {/* MODAL CODE TO ADD NEW BILL*/}
                 <Modal
                     animationType="slide"
                     transparent={true}
                     visible={addBillModal}
                     onRequestClose={() => {
-                        Alert.alert("Modal has been closed.");
+                        //Alert.alert("Modal has been closed.");
                         setAddBillModal(!addBillModal);
                     }}
                 >
@@ -101,6 +175,7 @@ const Dashboard = () => {
 
 
                 </Modal>
+
 
                 <HorizontalViewTop>
                     <PageTitle>Dashboard</PageTitle>

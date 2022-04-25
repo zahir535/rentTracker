@@ -41,7 +41,7 @@ const Summary = () => {
     const dispatch = useDispatch()
 
 
-    // //calculate total bill
+    //calculate total bill
     const calcTotal = () => {
 
         //init sumOfAll val

@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    KeyboardAvoidingView,
     Image,
     TextInput,
     ScrollView,
@@ -124,6 +125,16 @@ export const ToPayWrapper = styled(View)`
     width: 100%;
     marginTop: 8px;
     marginRight:8px;
+`;
+
+export const AvoidKeyboard = styled(KeyboardAvoidingView)`
+    flex: 1;
+    width: 100%;
+`;
+
+export const DissmissKeyboard = styled(TouchableWithoutFeedback)`
+    flex: 1;
+    width: 100%;
 `;
 
 // -------------------------------- TEXT ---------------------------------

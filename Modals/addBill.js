@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ToastAndroid, Text } from 'react-native';
+import { View, ToastAndroid, Text, } from 'react-native';
 
 //import UI
 import {
@@ -31,6 +31,9 @@ import { Formik } from 'formik';
 //async
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//keyboard avoiding view
+import KeyboardAvoidingWrapper from '../UiComponents/KeyboardAvoidingWrapper';
+
 //redux
 import { useSelector, useDispatch, Provider } from 'react-redux';
 import {
@@ -41,8 +44,6 @@ import {
     selectToPayState,
     addTenant,
     updateTenant,
-    updateCount,
-    selectCount,
 } from './../Redux/reduxSlice';
 import Store from './../Redux/storeRedux';
 
@@ -61,8 +62,6 @@ const AddBill = ({ props, closeAddBillModal }) => {
     const tenantData = useSelector(selectTenant)
     //get toPayState
     const toPayData = useSelector(selectToPayState)
-    //get count
-    const count = useSelector(selectCount)
 
     //local state picker (payAdv)
     const [selectedPick, setSelectedPick] = useState();
@@ -83,8 +82,8 @@ const AddBill = ({ props, closeAddBillModal }) => {
         dispatch(updateToPayState(newPayState))
 
         //DEBUG
-        console.log("------------- useEffect -----------------")
-        console.log(newPayState);
+        // console.log("------------- useEffect -----------------")
+        // console.log(newPayState);
 
 
         //update count
@@ -126,7 +125,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
         //paidby - no xtra conditions
 
         //toPayState - get name value only from toPayData
-        const payString = [];
+        let payString = [];
 
         toPayData.forEach(element => {
             if (element.state.toString() == "true") {
@@ -153,8 +152,9 @@ const AddBill = ({ props, closeAddBillModal }) => {
         //condition toPayState = 
 
 
+        let conditionToPayState = toPayCondition();
 
-        if (selectedPick == null || (billTotal == '' || toPayCondition() == true)) {
+        if (selectedPick == null || billTotal == '' || conditionToPayState == false) {
             if (billTotal == '') {
                 ToastAndroid.show("bill Total field is empty",
                     ToastAndroid.SHORT);
@@ -163,31 +163,51 @@ const AddBill = ({ props, closeAddBillModal }) => {
                 ToastAndroid.show("Paid By not selected",
                     ToastAndroid.SHORT);
             }
-            if (toPayCondition() == undefined) {
+            if (conditionToPayState == undefined) {
                 ToastAndroid.show("no toPay selected",
                     ToastAndroid.SHORT);
             }
-
         } else {
             //save to redux bill
             let newArray = [...data, newBill];
-            dispatch(addBill(newArray))
 
-            //update redux tenant data
+            //update redux tenant data2
             //calculation
-            billCalcPayAdv(billTotal)
+            let pAdv = billCalcPayAdv(billTotal);
+            let tPay = billCalcToPay(billTotal);
 
-            //billCalcToPay(billTotal)
+            let combinedTenantCalc = [];
+            pAdv.forEach((element, i) => {
+                let obj = {}
+                obj.id = element.id;
+                obj.name = element.name;
+                obj.payAdv = element.payAdv;
+                obj.toPay = tPay[i].toPay;
+
+                combinedTenantCalc.push(obj)
+            });
+
+            //final update redux
+            //can useMULTIPLE DISPATCH FOR FIFFERENT INITIAL STATE
+            //ADDBILL UPDATE STATE = BILL
+            //UPDATETENANT UPDATE STATE = TENANT
+            dispatch(addBill(newArray))
+            dispatch(updateTenant(combinedTenantCalc))
+
+            //save to async
+            saveToAsyncBill(newArray)
+            saveToAsyncTenant(combinedTenantCalc)
 
             //after saved data - closed modal
             closeAddBillModal()
             showToast()
 
-            //debug - console.log TIME
-            const logTime = new Date().getTime();
-            console.log(logTime + " / " + typeof logTime);
-
-
+            //DEBUG - console.log TIME
+            // let logTime = new Date().getTime();
+            // console.log(logTime + " / " + typeof logTime);
+            // console.log(pAdv)
+            // console.log(tPay)
+            // console.log(combinedTenantCalc)
         }
     }
 
@@ -195,7 +215,8 @@ const AddBill = ({ props, closeAddBillModal }) => {
     //calculation
     const billCalcPayAdv = (billTotal) => {
 
-        console.log("billCalcPayAdv ------------")
+        //DEBUG
+        //console.log("billCalcPayAdv ------------")
 
         //payAdv calc - selectedPick
         //update tenant REDUX if tenant data name == selectedPick
@@ -232,14 +253,19 @@ const AddBill = ({ props, closeAddBillModal }) => {
             newTenantData.push(obj);
         });
 
-        dispatch(updateTenant(newTenantData))
+        //dispatch(updateTenant(newTenantData))
 
         //DEBUG
         //console.log(newTenantData)
+
+        return (newTenantData);
+
+
     }
     const billCalcToPay = (billTotal) => {
 
-        console.log("billCalcToPay ------------")
+        //DEBUG
+        //console.log("billCalcToPay ------------")
 
         //toPay calc
         //update tenant REDUX if item.state from toPayData == true
@@ -248,7 +274,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
         // newTenant.toPay = 0;
         // newTenant.payAdv = 0;
 
-        const arrChecker = [];
+        let arrChecker = [];
         // just need to check string
         //bcs order of name from tenantData & toPayData is same. 
         //only different properties in state
@@ -258,7 +284,7 @@ const AddBill = ({ props, closeAddBillModal }) => {
         });
 
         //only then calc toPayData
-        let dividedVal = billTotal / count;
+        let dividedVal = billTotal / checkCount();
 
         //initialize new array, to be immutable into redux        
         let toPayTenantData = [];
@@ -274,9 +300,10 @@ const AddBill = ({ props, closeAddBillModal }) => {
                 object.toPay = tenantData[i].toPay + dividedVal;
                 object.payAdv = tenantData[i].payAdv;
 
-                console.log("dividedVal ==> ")
-                console.log(typeof dividedVal)
-                console.log(tenantData[i].name + " / " + dividedVal)
+                //DEBUG
+                //console.log("dividedVal ==> ")
+                //console.log(typeof dividedVal)
+                //console.log(tenantData[i].name + " / " + dividedVal)
             }
 
             if (element == "false") {
@@ -291,14 +318,15 @@ const AddBill = ({ props, closeAddBillModal }) => {
         });
 
         //update new state to redux after tenant data changed
-        dispatch(addTenant(toPayTenantData))
+        //dispatch(addTenant(toPayTenantData))
 
+        //DEBUG
+        //console.log("divideval:" + dividedVal + "  -  ")
+        //console.log(toPayTenantData)
 
-        console.log("divideval:" + dividedVal + "  -  ")
-        console.log(toPayTenantData)
+        return (toPayTenantData);
 
     }
-
 
     //toast message successfull
     const showToast = () => {
@@ -308,7 +336,9 @@ const AddBill = ({ props, closeAddBillModal }) => {
 
     //topayState condition
     const toPayCondition = () => {
-        const arr = [];
+        //DEBUG
+        //console.log("toPayCondition ------------")
+        let arr = [];
 
         toPayData.forEach(element => {
             let s = element.state.toString();
@@ -318,13 +348,40 @@ const AddBill = ({ props, closeAddBillModal }) => {
         console.log(arr)
 
         const isNotZero = (e) => e == "true";
-        console.log("find fx ==> " + arr.find(isNotZero));
+        //DEBUG
+        //console.log("find fx ==> " + arr.find(isNotZero));
 
         // return true if array have a val == true
         return arr.find(isNotZero);
     }
 
+    //toPayState count where val = true
+    const checkCount = () => {
+        //DEBUG
+        //console.log("CheckCount ------------")
+        let arr = [];
 
+        toPayData.forEach(element => {
+            let s = element.state.toString();
+            arr.push(s);
+        });
+
+        //DEBUG
+        console.log(arr)
+
+        let dividedBy = 0;
+        arr.forEach(element => {
+            if (element == "true") {
+                dividedBy += 1;
+            }
+        });
+
+        //DEBUG
+        //console.log(dividedBy)
+
+        // return true if array have a val == true
+        return dividedBy;
+    }
 
     //update local state
     const allTrueState = () => {
@@ -342,11 +399,9 @@ const AddBill = ({ props, closeAddBillModal }) => {
         dispatch(updateToPayState(newPayState))
 
         //DEBUG
-        console.log("------------- allTrueState -----------------")
-        console.log(newPayState);
+        //console.log("------------- allTrueState -----------------")
+        //console.log(newPayState);
 
-        //update count
-        //updateCountFx()
     }
     const updateTenantState = (selectedName) => {
         //update toPayState REDUX if tenant data changed
@@ -370,121 +425,112 @@ const AddBill = ({ props, closeAddBillModal }) => {
         dispatch(updateToPayState(newPayState))
 
         //DEBUG
-        console.log("------------- updateTenantState -----------------")
-        console.log(newPayState);
+        //console.log("------------- updateTenantState -----------------")
+        //console.log(newPayState);
 
-        //update count
-        //updateCountFx()
     }
 
-    // //check how many state==true in toPayData
-    const updateCountFx = () => {
-        console.log("updateCount FX ------------ >")
-
-        //re-initialize count = 0 everytime call updatecount fx
-        // obj.name = item.name;
-        // obj.state = true;
-        let localCount = 6;
-        toPayData.map((item) => {
-            if (item.state == true) {
-                console.log("true - " + item.name)
-            } else {
-                console.log("false - " + item.name)
-            }
-        })
-
-        //update count redux val
-        dispatch(updateCount(localCount))
-
-        console.log("count val: " + count)
-    }
-
-
+    //fx save to async
+    const saveToAsyncBill = async (newArray) => {
+        try {
+            await AsyncStorage.setItem('@MyBill', JSON.stringify(newArray));
+        } catch (err) {
+            ToastAndroid.show(err,
+                ToastAndroid.SHORT);
+        }
+    };
+    const saveToAsyncTenant = async (combinedTenantCalc) => {
+        try {
+            await AsyncStorage.setItem('@MyTenant', JSON.stringify(combinedTenantCalc));
+        } catch (err) {
+            ToastAndroid.show(err,
+                ToastAndroid.SHORT);
+        }
+    };
 
 
     return (
-        <ScrollList>
-            <InnerContainer>
+        <KeyboardAvoidingWrapper>
+            <ScrollList>
+                <InnerContainer>
 
-                <HorizontalViewTop>
-                    <PageTitle>Add New bill</PageTitle>
-                    <ModalButton
-                        onPress={() => {
-                            closeAddBillModal()
+                    <HorizontalViewTop>
+                        <PageTitle>Add New bill</PageTitle>
+                        <ModalButton
+                            onPress={() => {
+                                closeAddBillModal()
+                            }}
+
+                        >
+                            <PageTitle>X</PageTitle>
+                        </ModalButton>
+                    </HorizontalViewTop>
+
+                    <SmallSpaceBreak></SmallSpaceBreak>
+
+                    {/**FORMIK BILL NAME & BILL TOTAL */}
+                    <Formik
+                        initialValues={{
+                            billName: '',
+                            billTotal: '',
                         }}
-
+                        onSubmit={values => {
+                            //console.log(values)
+                            addBillSubmit(values)
+                        }}
                     >
-                        <PageTitle>X</PageTitle>
-                    </ModalButton>
-                </HorizontalViewTop>
+                        {({ handleChange, handleBlur, handleSubmit, values }) => (
+                            <View>
+                                <InputArea
+                                    label='Bill name:'
+                                    placeholder='bill Name'
+                                    onChangeText={handleChange('billName')}
+                                    onBlur={handleBlur('billName')}
+                                    value={values.billName}
+                                />
 
-                <SmallSpaceBreak></SmallSpaceBreak>
+                                <InputArea
+                                    label='Bill Total:'
+                                    placeholder='bill Total'
+                                    onChangeText={handleChange('billTotal')}
+                                    onBlur={handleBlur('billTotal')}
+                                    value={values.billTotal.toString()}
+                                    keyboardType='numeric'
+                                //for password use - security
+                                //secureTextEntry={true}
+                                />
 
-                {/**FORMIK BILL NAME & BILL TOTAL */}
-                <Formik
-                    initialValues={{
-                        billName: '',
-                        billTotal: '',
-                    }}
-                    onSubmit={values => {
-                        //console.log(values)
-                        addBillSubmit(values)
-                    }}
-                >
-                    {({ handleChange, handleBlur, handleSubmit, values }) => (
-                        <View>
-                            <InputArea
-                                label='Bill name:'
-                                placeholder='bill Name'
-                                onChangeText={handleChange('billName')}
-                                onBlur={handleBlur('billName')}
-                                value={values.billName}
-                            />
+                                {/* PICKER  */}
+                                <PickerArea
+                                    label="Paid By:"
+                                    selectedPick={selectedPick}
+                                    setSelectedPick={setSelectedPick}
+                                    tenantData={tenantData}
+                                />
 
-                            <InputArea
-                                label='Bill Total:'
-                                placeholder='bill Total'
-                                onChangeText={handleChange('billTotal')}
-                                onBlur={handleBlur('billTotal')}
-                                value={values.billTotal.toString()}
-                                keyboardType='numeric'
-                            //for password use - security
-                            //secureTextEntry={true}
-                            />
+                                {/* CUSTOM BUTTON & FX */}
+                                <ToPayArea
+                                    label="To Pay:"
+                                    toPayData={toPayData}
+                                    allTrueState={allTrueState}
+                                    updateTenantState={updateTenantState}
+                                />
 
-                            {/* PICKER  */}
-                            <PickerArea
-                                label="Paid By:"
-                                selectedPick={selectedPick}
-                                setSelectedPick={setSelectedPick}
-                                tenantData={tenantData}
-                            />
+                                <SmallSpaceBreak />
 
-                            {/* CUSTOM BUTTON & FX */}
-                            <ToPayArea
-                                label="To Pay:"
-                                toPayData={toPayData}
-                                allTrueState={allTrueState}
-                                updateTenantState={updateTenantState}
-                            />
+                                <AddTenantButton
+                                    onPress={handleSubmit} title="Submit"
+                                >
+                                    <StrongText>Add Bill</StrongText>
+                                </AddTenantButton>
 
-                            <SmallSpaceBreak />
+                            </View>
+                        )}
+                    </Formik>
 
-                            <AddTenantButton
-                                onPress={handleSubmit} title="Submit"
-                            >
-                                <StrongText>Add Bill</StrongText>
-                            </AddTenantButton>
-
-                        </View>
-                    )}
-                </Formik>
-
-
-
-            </InnerContainer>
-        </ScrollList>
-
+                </InnerContainer>
+            </ScrollList>
+        </KeyboardAvoidingWrapper>
     );
 }
 
