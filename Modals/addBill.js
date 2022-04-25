@@ -295,9 +295,12 @@ const AddBill = ({ props, closeAddBillModal }) => {
 
             if (element == "true") {
                 // if state == "true", sum of toPay, others original val
+
+                let valAdded = tenantData[i].toPay + dividedVal
+                
                 object.id = tenantData[i].id;
                 object.name = tenantData[i].name;
-                object.toPay = tenantData[i].toPay + dividedVal;
+                object.toPay = parseFloat(valAdded);
                 object.payAdv = tenantData[i].payAdv;
 
                 //DEBUG

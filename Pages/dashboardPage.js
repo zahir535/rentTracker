@@ -51,64 +51,7 @@ import BillWrapper from "../Redux/BillWrapper";
 import KeyboardAvoidingWrapper from "../UiComponents/KeyboardAvoidingWrapper";
 
 
-//initiate val from async
-const Init = () => {
-    // dispatch(addBill(newArray))
-    // dispatch(updateTenant(combinedTenantCalc))
 
-    //redux dispatch
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        loadBill()
-        loadTenant()
-    }, []);
-
-    //Mybill JSON async
-    const loadBill = async () => {
-        try {
-            let jsonvalue = await AsyncStorage.getItem('@MyBill');
-
-            if (jsonvalue !== null) {
-                //save to redux
-                //E.G = setBill(JSON.parse(jsonvalue));
-                let val = JSON.parse(jsonvalue);
-                dispatch(addBill(val))
-            }
-
-        } catch (err) {
-            alert(err);
-        }
-    }
-
-    //MyTenant JSON async
-    const loadTenant = async () => {
-        try {
-            let jsonvalue = await AsyncStorage.getItem('@MyTenant');
-
-            if (jsonvalue !== null) {
-                //save to redux
-                //E.G = setBill(JSON.parse(jsonvalue));
-                let val = JSON.parse(jsonvalue);
-                dispatch(updateTenant(val))
-            }
-
-        } catch (err) {
-            alert(err);
-        }
-    }
-
-    return null;
-}
-
-//wrapper to enable the use of redux
-const InitWrapper = () => {
-    return (
-        <Provider store={Store}>
-            <Init />
-        </Provider>
-    );
-}
 
 
 const Dashboard = () => {
@@ -123,10 +66,63 @@ const Dashboard = () => {
         setAddBillModal(false);
     }
 
+    const [localBill, setLocalBill] = useState([]);
+    const [localTenant, setLocalTenant] = useState([]);
+
+    //redux
+    const dispatch = useDispatch()
+
     useEffect(() => {
-        InitWrapper()
+
+        // loadBill()
+        // loadTenant()
+
+        dispatch(addBill(localBill))
+        dispatch(addTenant(localTenant))
+
+        //DEBUG
+        console.log("useeffect dashboard --------------------------")
     }, [])
 
+    //Mybill JSON async
+    const loadBill = async () => {
+        try {
+            let jsonvalue = await AsyncStorage.getItem('@MyBill');
+
+            if (jsonvalue !== null) {
+                //save to redux
+                //E.G = setBill(JSON.parse(jsonvalue));
+                setLocalBill(JSON.parse(jsonvalue));
+            }
+
+        } catch (err) {
+            alert(err);
+        }
+
+        //DEBUG
+        console.log("loadBill --------------------------")
+        console.log(JSON.parse(jsonvalue))
+    }
+
+    //MyTenant JSON async
+    const loadTenant = async () => {
+        try {
+            let jsonvalue = await AsyncStorage.getItem('@MyTenant');
+
+            if (jsonvalue !== null) {
+                //save to redux
+                //E.G = setBill(JSON.parse(jsonvalue));
+                setLocalTenant(JSON.parse(jsonvalue));
+            }
+
+        } catch (err) {
+            alert(err);
+        }
+
+        //DEBUG
+        console.log("loadTenant --------------------------")
+        console.log(JSON.parse(jsonvalue))
+    }
 
     return (
         <StyledContainer>
@@ -224,7 +220,15 @@ const Dashboard = () => {
 }
 
 
+export const DashboardWrapper = () => {
+
+    return (
+        <Provider store={Store} >
+            <Dashboard />
+        </Provider>
+    );
+
+}
 
 
-
-export default Dashboard;
+export default DashboardWrapper;

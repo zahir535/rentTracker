@@ -111,6 +111,9 @@ const Summary = () => {
 
             {data.map(
                 (item, i) => {
+
+                    let toPayString = item.toPay.toString()
+                    let payAdvString = item.payAdv.toString()
                     return (
                         <HorizontalView key={i} >
                             <LeftView>
@@ -118,11 +121,11 @@ const Summary = () => {
                             </LeftView>
 
                             <LeftView>
-                                <NormalText>{item.toPay}</NormalText>
+                                <NormalText>{toPayString.slice(0, 6)}</NormalText>
                             </LeftView>
 
                             <LeftView>
-                                <NormalText>{item.payAdv}</NormalText>
+                                <NormalText>{payAdvString.slice(0,6)}</NormalText>
                             </LeftView>
                         </HorizontalView>
                     );
@@ -130,7 +133,7 @@ const Summary = () => {
             )}
 
             <HorizontalViewEnd style={{ marginTop: 24, }} >
-                <StrongText>Total bill: {totalBillRedux}</StrongText>
+                <StrongText>Total bill: {totalBillRedux.toString().slice(0,6)}</StrongText>
             </HorizontalViewEnd>
 
             <AddTenantButton

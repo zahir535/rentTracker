@@ -1,11 +1,11 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './Pages/loginPage';
-import Dashboard from './Pages/dashboardPage';
+import DashboardWrapper from './Pages/dashboardPage';
 
 export default function App() {
   return (
-    <Dashboard />
+    <DashboardWrapper />
   );
 }
 

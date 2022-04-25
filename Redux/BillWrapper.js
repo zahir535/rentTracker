@@ -69,12 +69,12 @@ const Bill = () => {
                             <HorizontalViewEnd style={{ marginTop: 8, }} >
                                 <HalfNormalText style={{ marginLeft: 24, }} >{item.billDate}</HalfNormalText>
                                 <View style={{ flexDirection: 'row', marginLeft: 50 }} >
-                                    <HalfNormalText>padi By: </HalfNormalText>
+                                    <HalfNormalText>paid By: </HalfNormalText>
                                     <HalfNormalText>{item.paidby}</HalfNormalText>
                                 </View>
                             </HorizontalViewEnd>
 
-                            <HorizontalViewEnd style={{ marginTop: 8, }} >
+                            <HorizontalViewEnd style={{ marginTop: 8, flexWrap: 'wrap' }} >
                                 <HalfNormalText style={{ marginLeft: 24, }} >toPay:  </HalfNormalText>
                                 <HalfNormalText>{item.toPayState}</HalfNormalText>
                             </HorizontalViewEnd>

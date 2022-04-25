@@ -95,6 +95,7 @@ export const HorizontalViewTop = styled(HorizontalView)`
 
 export const HorizontalViewEnd = styled(HorizontalView)`
     justifyContent: flex-start;
+    flexWrap: wrap;
 `;
 
 export const ModalView = styled(View)`
