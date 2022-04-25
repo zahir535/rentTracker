@@ -58,10 +58,6 @@ const Init = () => {
 
     //redux dispatch
     const dispatch = useDispatch();
-    //getBilldatafirst
-    const data = useSelector(selectBill)
-    //getTenantdata
-    const tenantData = useSelector(selectTenant)
 
     useEffect(() => {
         loadBill()

@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/home_icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.zahir111.rentTracker"
     },
     "web": {
       "favicon": "./assets/favicon.png"
