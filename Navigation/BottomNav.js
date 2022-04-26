@@ -28,7 +28,7 @@ function MyTabs() {
     return (
         <NavigationContainer>
             <Tab.Navigator
-                initialRouteName="Setting"
+                initialRouteName="Dashboard"
                 screenOptions={{
                     headerShown: false,
                     tabBarActiveTintColor: '#fff',
