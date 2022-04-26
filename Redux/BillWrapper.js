@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useDebugValue } from 'react';
-import { View, Text, Button, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, Button, TouchableOpacity, TextInput, ScrollView, ToastAndroid } from 'react-native';
 
 //styled
 import {
@@ -12,6 +12,7 @@ import {
     LineNormalText,
     AddTenantButton,
     ButtonCenterText,
+    SquareButton,
 } from './../UiComponents/uiComponents';
 
 //redux
@@ -22,7 +23,11 @@ import {
 } from './reduxSlice';
 import Store from './storeRedux';
 
+//async
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//icon 
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Bill = () => {
 
@@ -30,12 +35,38 @@ const Bill = () => {
 
     const dispatch = useDispatch()
 
-    //clear tenant data
+    //clear bill data
     const clearBill = () => {
 
         let newBillData = [];
 
         dispatch(addBill(newBillData))
+        saveToAsyncBill(newBillData)
+    }
+
+    //fx save to async
+    const saveToAsyncBill = async (newBillData) => {
+        try {
+            await AsyncStorage.setItem('@MyBill', JSON.stringify(newBillData));
+        } catch (err) {
+            ToastAndroid.show(err,
+                ToastAndroid.SHORT);
+        }
+    };
+
+    //delete specific bill
+    const deleteOneBill = (i) => {
+        let filteredBill = [];
+
+        data.forEach((element, j) => {
+            if (j != i) {
+                filteredBill.push(element);
+            }
+        });
+
+        dispatch(addBill(filteredBill))
+        saveToAsyncBill(filteredBill)
+
     }
 
     // billNo
@@ -49,54 +80,121 @@ const Bill = () => {
         <View>
             <SmallSpaceBreak />
 
-            {data.map(
-                (item, i) => {
-                    return (
-                        <InnerContainer key={i} style={{ marginBottom: 12, }}>
-                            <HorizontalViewEnd>
-                                <HalfNormalText>{item.billNo})</HalfNormalText>
+            {
+                data.map(
 
-                                <View style={{ flexDirection: 'row', marginLeft: 12, }} >
-                                    <HalfNormalText>{item.billName}</HalfNormalText>
+                    (item, i) => {
+                        if (data.length > 0) {
+                            return (
+                                <InnerContainer key={i} style={{ marginBottom: 12, }}>
+                                    <HorizontalViewEnd>
+                                        <HalfNormalText>{item.billNo})</HalfNormalText>
+
+                                        <View style={{ flexDirection: 'row', marginLeft: 12, }} >
+                                            <HalfNormalText>{item.billName}</HalfNormalText>
+                                        </View>
+
+                                        <View style={{ flexDirection: 'row', marginLeft: 70, }} >
+                                            <HalfNormalText>total: </HalfNormalText>
+                                            <HalfNormalText >{item.billTotal.toString().slice(0, 6)}</HalfNormalText>
+                                        </View>
+
+                                        <SquareButton
+                                            onPress={() => {
+                                                deleteOneBill(i)
+                                            }}
+                                        >
+                                            <MaterialIcons name="delete" size={24} color="grey" style={{ opacity: .6, }} />
+                                        </SquareButton>
+                                    </HorizontalViewEnd>
+
+                                    <HorizontalViewEnd style={{ marginTop: 8, }} >
+                                        <HalfNormalText style={{ marginLeft: 24, }} >{item.billDate}</HalfNormalText>
+                                        <View style={{ flexDirection: 'row', marginLeft: 50 }} >
+                                            <HalfNormalText>paid By: </HalfNormalText>
+                                            <HalfNormalText>{item.paidby}</HalfNormalText>
+                                        </View>
+                                    </HorizontalViewEnd>
+
+                                    <HorizontalViewEnd style={{ marginTop: 8, flexWrap: 'wrap' }} >
+                                        <HalfNormalText style={{ marginLeft: 24, }} >toPay:  </HalfNormalText>
+                                        <HalfNormalText>{item.toPayState.toString().slice(0, 35)}</HalfNormalText>
+                                    </HorizontalViewEnd>
+
+                                    <InnerContainer style={{ justifyContent: 'center', alignItems: 'center' }} >
+                                        <LineNormalText>
+                                            -------------------------------
+                                        </LineNormalText>
+                                    </InnerContainer>
+
+                                </InnerContainer>
+                            );
+                        } else {
+                            return (
+                                <View>
+                                    <Text>No data !</Text>
                                 </View>
+                            );
+                        }
+                    }
 
-                                <View style={{ flexDirection: 'row', marginLeft: 150 }} >
-                                    <HalfNormalText>total: </HalfNormalText>
-                                    <HalfNormalText>{item.billTotal}</HalfNormalText>
-                                </View>
-                            </HorizontalViewEnd>
+                    // (item, i) => {
+                    //     return (
+                    //         <InnerContainer key={i} style={{ marginBottom: 12, }}>
+                    //             <HorizontalViewEnd>
+                    //                 <HalfNormalText>{item.billNo})</HalfNormalText>
 
-                            <HorizontalViewEnd style={{ marginTop: 8, }} >
-                                <HalfNormalText style={{ marginLeft: 24, }} >{item.billDate}</HalfNormalText>
-                                <View style={{ flexDirection: 'row', marginLeft: 50 }} >
-                                    <HalfNormalText>paid By: </HalfNormalText>
-                                    <HalfNormalText>{item.paidby}</HalfNormalText>
-                                </View>
-                            </HorizontalViewEnd>
+                    //                 <View style={{ flexDirection: 'row', marginLeft: 12, }} >
+                    //                     <HalfNormalText>{item.billName}</HalfNormalText>
+                    //                 </View>
 
-                            <HorizontalViewEnd style={{ marginTop: 8, flexWrap: 'wrap' }} >
-                                <HalfNormalText style={{ marginLeft: 24, }} >toPay:  </HalfNormalText>
-                                <HalfNormalText>{item.toPayState}</HalfNormalText>
-                            </HorizontalViewEnd>
+                    //                 <View style={{ flexDirection: 'row', marginLeft: 70, }} >
+                    //                     <HalfNormalText>total: </HalfNormalText>
+                    //                     <HalfNormalText >{item.billTotal.toString().slice(0, 6)}</HalfNormalText>
+                    //                 </View>
 
-                            <InnerContainer style={{ justifyContent: 'center', alignItems: 'center' }} >
-                                <LineNormalText>
-                                    -------------------------------
-                                </LineNormalText>
-                            </InnerContainer>
+                    //                 <SquareButton
+                    //                     onPress={() => {
+                    //                         deleteOneBill(i)
+                    //                     }}
+                    //                 >
+                    //                     <MaterialIcons name="delete" size={24} color="grey" style={{ opacity: .6, }} />
+                    //                 </SquareButton>
+                    //             </HorizontalViewEnd>
 
-                        </InnerContainer>
-                    );
-                }
-            )}
+                    //             <HorizontalViewEnd style={{ marginTop: 8, }} >
+                    //                 <HalfNormalText style={{ marginLeft: 24, }} >{item.billDate}</HalfNormalText>
+                    //                 <View style={{ flexDirection: 'row', marginLeft: 50 }} >
+                    //                     <HalfNormalText>paid By: </HalfNormalText>
+                    //                     <HalfNormalText>{item.paidby}</HalfNormalText>
+                    //                 </View>
+                    //             </HorizontalViewEnd>
 
-            <AddTenantButton
+                    //             <HorizontalViewEnd style={{ marginTop: 8, flexWrap: 'wrap' }} >
+                    //                 <HalfNormalText style={{ marginLeft: 24, }} >toPay:  </HalfNormalText>
+                    //                 <HalfNormalText>{item.toPayState.toString().slice(0, 35)}</HalfNormalText>
+                    //             </HorizontalViewEnd>
+
+                    //             <InnerContainer style={{ justifyContent: 'center', alignItems: 'center' }} >
+                    //                 <LineNormalText>
+                    //                     -------------------------------
+                    //                 </LineNormalText>
+                    //             </InnerContainer>
+
+                    //         </InnerContainer>
+                    //     );
+                    // }
+                )
+            }
+
+            {/* CLEAR ALL BILL BUTTON */}
+            {/* <AddTenantButton
                 onPress={() => {
                     clearBill()
                 }}
             >
                 <ButtonCenterText>Clear all bill</ButtonCenterText>
-            </AddTenantButton>
+            </AddTenantButton> */}
         </View>
     );
 }

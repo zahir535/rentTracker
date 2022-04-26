@@ -8,6 +8,7 @@ export const reduxSlice = createSlice({
         bill: [],
         totalBill: 0,
         toPayState: [],
+        monthly: [],
     },
     reducers: {
         addTenant: (state, action) => {
@@ -28,6 +29,10 @@ export const reduxSlice = createSlice({
             state.toPayState = action.payload;
         },
 
+        addMonthly: (state, action) => {
+            state.monthly = action.payload;
+        },
+
     },
 })
 
@@ -39,6 +44,7 @@ export const {
     addBill,
     updateTotalBill,
     updateToPayState,
+    addMonthly,
 
 } = reduxSlice.actions
 
@@ -46,5 +52,6 @@ export const selectTenant = (state) => state.tenant.tenant
 export const selectBill = (state) => state.tenant.bill
 export const selectTotalbill = (state) => state.tenant.totalBill
 export const selectToPayState = (state) => state.tenant.toPayState
+export const selectMonthly = (state) => state.tenant.monthly
 
 export default reduxSlice.reducer

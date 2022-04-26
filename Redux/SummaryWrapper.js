@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, Button, TouchableOpacity, TextInput, ScrollView, ToastAndroid } from 'react-native';
 
 //styled
 import {
@@ -26,7 +26,8 @@ import {
 } from './reduxSlice';
 import Store from './storeRedux';
 
-
+//async
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Summary = () => {
 
@@ -79,7 +80,18 @@ const Summary = () => {
 
 
         dispatch(updateTenant(newTenantData))
+        saveToAsyncTenant(newTenantData)
     }
+
+    //fx save to async
+    const saveToAsyncTenant = async (newTenantData) => {
+        try {
+            await AsyncStorage.setItem('@MyTenant', JSON.stringify(newTenantData));
+        } catch (err) {
+            ToastAndroid.show(err,
+                ToastAndroid.SHORT);
+        }
+    };
 
 
 
@@ -112,8 +124,6 @@ const Summary = () => {
             {data.map(
                 (item, i) => {
 
-                    let toPayString = item.toPay.toString()
-                    let payAdvString = item.payAdv.toString()
                     return (
                         <HorizontalView key={i} >
                             <LeftView>
@@ -121,11 +131,11 @@ const Summary = () => {
                             </LeftView>
 
                             <LeftView>
-                                <NormalText>{toPayString.slice(0, 6)}</NormalText>
+                                <NormalText>{item.toPay.toString().slice(0, 6)}</NormalText>
                             </LeftView>
 
                             <LeftView>
-                                <NormalText>{payAdvString.slice(0,6)}</NormalText>
+                                <NormalText>{item.payAdv.toString().slice(0, 6)}</NormalText>
                             </LeftView>
                         </HorizontalView>
                     );
@@ -133,7 +143,7 @@ const Summary = () => {
             )}
 
             <HorizontalViewEnd style={{ marginTop: 24, }} >
-                <StrongText>Total bill: {totalBillRedux.toString().slice(0,6)}</StrongText>
+                <StrongText>Total bill: {totalBillRedux.toString().slice(0, 6)}</StrongText>
             </HorizontalViewEnd>
 
             <AddTenantButton

@@ -96,6 +96,7 @@ export const HorizontalViewTop = styled(HorizontalView)`
 export const HorizontalViewEnd = styled(HorizontalView)`
     justifyContent: flex-start;
     flexWrap: wrap;
+    alignItems: center;
 `;
 
 export const ModalView = styled(View)`
@@ -213,10 +214,8 @@ export const ModalButton = styled(TouchableOpacity)`
 `;
 
 export const SquareButton = styled(TouchableOpacity)`
-    padding: 12px;
-    borderWidth: 1px;
-    marginBottom: 24px;
-    marginTop:12px;
+    padding: 4px;
+    marginLeft: 32px;
 `;
 
 export const ToPayButton = styled(TouchableOpacity)`
@@ -231,6 +230,12 @@ export const ToPayButton = styled(TouchableOpacity)`
 
 export const ToPaybuttonChecked = styled(ToPayButton)`
     background-color: ${dark};
+`;
+
+export const ShowButton = styled(TouchableOpacity)`
+    paddingVertical: 12px;
+    marginBottom: 12px;
+    width: 100%;
 `;
 
 // -------------------------------- IMG/ICON ---------------------------------

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TextInput, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Modal, TouchableOpacity, ToastAndroid } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 //import UI
@@ -66,6 +66,10 @@ const Dashboard = () => {
         setAddBillModal(false);
     }
 
+    //condition if data is populated or not - 26/4 still not used
+    const [dataPopulated, setDataPopulated] = useState(false);
+
+    //local state
     const [localBill, setLocalBill] = useState([]);
     const [localTenant, setLocalTenant] = useState([]);
 
@@ -74,8 +78,8 @@ const Dashboard = () => {
 
     useEffect(() => {
 
-        // loadBill()
-        // loadTenant()
+        loadBill()
+        loadTenant()
 
         dispatch(addBill(localBill))
         dispatch(addTenant(localTenant))
@@ -86,43 +90,59 @@ const Dashboard = () => {
 
     //Mybill JSON async
     const loadBill = async () => {
+
+
         try {
+            //DEBUG
+            console.log("loadBill --------------------------")
+            console.log(JSON.parse(jsonvalue))
+
             let jsonvalue = await AsyncStorage.getItem('@MyBill');
 
             if (jsonvalue !== null) {
                 //save to redux
                 //E.G = setBill(JSON.parse(jsonvalue));
                 setLocalBill(JSON.parse(jsonvalue));
+                setDataPopulated(true);
+            } else {
+                setDataPopulated(false);
             }
 
         } catch (err) {
-            alert(err);
+            console.log(err)
         }
 
-        //DEBUG
-        console.log("loadBill --------------------------")
-        console.log(JSON.parse(jsonvalue))
+
     }
 
     //MyTenant JSON async
     const loadTenant = async () => {
+
+
+
         try {
+
+            //DEBUG
+            console.log("loadTenant --------------------------")
+            console.log(JSON.parse(jsonvalue))
+
             let jsonvalue = await AsyncStorage.getItem('@MyTenant');
 
             if (jsonvalue !== null) {
                 //save to redux
                 //E.G = setBill(JSON.parse(jsonvalue));
                 setLocalTenant(JSON.parse(jsonvalue));
+                setDataPopulated(true);
+            } else {
+                setDataPopulated(false);
             }
 
         } catch (err) {
-            alert(err);
+            console.log(err)
         }
-
-        //DEBUG
-        console.log("loadTenant --------------------------")
-        console.log(JSON.parse(jsonvalue))
     }
+
+    
 
     return (
         <StyledContainer>
@@ -173,14 +193,15 @@ const Dashboard = () => {
                     <PageTitle>Dashboard</PageTitle>
 
                     <HorizontalViewTop>
-                        <ModalButton
+                        {/* ADD NEW TENANT IN SETTING PAGE */}
+                        {/* <ModalButton
                             onPress={() => {
                                 // console.log("Add tenant modal invoked!")
                                 setAddTenantModal(true)
                             }}
                         >
                             <Ionicons name="person-add" size={24} color="black" />
-                        </ModalButton>
+                        </ModalButton> */}
 
                         <ModalButton
                             onPress={() => {
