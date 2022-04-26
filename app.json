@@ -24,7 +24,8 @@
         "foregroundImage": "./assets/home_icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.zahir111.rentTracker"
+      "package": "com.zahir111.rentTracker",
+      "googleServicesFile": "./JsonFiles/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "126906390779",
+    "project_id": "renttracker-3c72f",
+    "storage_bucket": "renttracker-3c72f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126906390779:android:d25b5b6b1da7af0e10f85e",
+        "android_client_info": {
+          "package_name": "com.zahir111.rentTracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126906390779-bo988hd37gh3na6p2tqo8f0n1krbobsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKQADg3KVRWwfOrlOmrnnanPpV96e73Jw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126906390779-bo988hd37gh3na6p2tqo8f0n1krbobsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
